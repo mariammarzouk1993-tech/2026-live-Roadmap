@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>2026 UX Design Roadmap — Floward</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:13px}
+:root{
+  --navy:#1a1f4e;--indigo:#6366f1;--indigo-light:#818cf8;
+  --green:#059669;--green-bg:#d1fae5;--green-border:#059669;
+  --purple:#7c3aed;--purple-bg:#ede9fe;--purple-border:#7c3aed;
+  --orange:#f97316;--orange-bg:#ffedd5;--orange-border:#f97316;
+  --gray:#94a3b8;--gray-bg:#e2e8f0;--gray-border:#94a3b8;
+  --slate50:#f8fafc;--slate100:#f1f5f9;--slate200:#e2e8f0;
+  --slate300:#cbd5e1;--slate400:#94a3b8;--slate500:#64748b;
+  --slate600:#475569;--slate700:#334155;--slate800:#1e293b;--slate900:#0f172a;
+  --radius:8px;--shadow:0 1px 3px rgba(0,0,0,.08);
+  --shadow-lg:0 10px 25px rgba(0,0,0,.12),0 4px 10px rgba(0,0,0,.08);
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--slate300);border-radius:3px}
+
+/* layout */
+#app{min-height:100vh}
+
+/* HEADER */
+.hdr{background:white;border-bottom:1px solid var(--slate200);padding:20px 32px;position:sticky;top:0;z-index:50;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.hdr-inner{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px}
+.hdr-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo);margin-bottom:4px}
+.hdr-h1{font-size:22px;font-weight:800;color:var(--slate900);letter-spacing:-.01em}
+.hdr-sub{font-size:12px;color:var(--slate400);margin-top:4px;max-width:460px}
+.legend-strip{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.legend-item{display:flex;align-items:center;gap:7px;cursor:default}
+.legend-dot{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.legend-label{font-size:11px;font-weight:600;color:var(--slate700)}
+.legend-count{font-size:10px;color:var(--slate400)}
+
+/* TOOLBAR */
+.toolbar{background:white;border-bottom:1px solid var(--slate200);padding:8px 32px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tb-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--slate200);background:var(--slate50);color:var(--slate700);transition:all .15s;font-family:inherit}
+.tb-btn:hover{background:var(--slate100);border-color:var(--slate300)}
+.tb-btn.accent{background:var(--indigo);color:white;border-color:var(--indigo)}
+.tb-btn.accent:hover{background:#4f46e5}
+.tb-btn.success{background:#ecfdf5;color:var(--green);border-color:#a7f3d0}
+.tb-btn.success:hover{background:#d1fae5}
+.tb-sep{width:1px;height:22px;background:var(--slate200)}
+.search-wrap{flex:1;max-width:260px;position:relative}
+.search-wrap input{width:100%;padding:6px 12px 6px 30px;border:1px solid var(--slate200);border-radius:6px;font-size:12px;font-family:inherit;color:var(--slate700);background:var(--slate50);outline:none;transition:border-color .15s}
+.search-wrap input:focus{border-color:var(--indigo);background:white}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--slate400);font-size:13px;pointer-events:none}
+
+/* GRID */
+.grid-wrap{background:white;box-shadow:var(--shadow);overflow-x:auto}
+.col-header{display:flex;position:sticky;top:56px;z-index:20;background:white;border-bottom:1px solid var(--slate200)}
+.col-label-cell{flex-shrink:0;border-right:1px solid var(--slate200);padding:0 16px 8px;display:flex;align-items:flex-end}
+.col-label-text{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate300)}
+.month-grid{flex:1;min-width:0}
+.quarter-row{display:flex;border-bottom:1px solid var(--slate100)}
+.quarter-cell{flex:1;text-align:center;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 0}
+.month-row{display:flex}
+.month-cell{flex:1;text-align:center;font-size:11px;color:var(--slate400);padding:5px 0;border-right:1px solid var(--slate100)}
+.month-cell:last-child{border-right:none}
+
+/* THEME ROWS */
+.theme-row{display:flex;border-bottom:1px solid var(--slate100)}
+.theme-row:last-child{border-bottom:none}
+.theme-row:hover{background:rgba(248,250,252,.4)}
+.theme-label-cell{flex-shrink:0;display:flex;align-items:center;padding:0 16px;border-right:1px solid var(--slate100);gap:0}
+.theme-label-inner{display:flex;align-items:center;gap:10px;width:100%}
+.theme-icon-box{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.theme-name{font-size:12px;font-weight:700;color:var(--slate700);flex:1;cursor:pointer}
+.theme-name:hover{color:var(--indigo)}
+.theme-edit-btn{opacity:0;width:20px;height:20px;border-radius:4px;border:1px solid var(--slate200);background:white;color:var(--slate500);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s;flex-shrink:0}
+.theme-label-cell:hover .theme-edit-btn{opacity:1}
+.bars-area{flex:1;min-width:0;position:relative}
+
+/* BARS */
+.bar{position:absolute;border-radius:6px;display:flex;flex-direction:column;justify-content:center;padding:0 10px;cursor:pointer;transition:filter .12s,transform .1s;overflow:hidden}
+.bar:hover{filter:brightness(.95);transform:translateY(-1px);z-index:5}
+.bar-title{font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.bar-date{font-size:9px;font-weight:500;opacity:.8;line-height:1.2}
+.bar-dashed{border-style:dashed!important;background-image:repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(5,150,105,.08) 4px,rgba(5,150,105,.08) 8px)!important}
+.bar-actions{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:none;gap:3px}
+.bar:hover .bar-actions{display:flex}
+.bar-action{width:18px;height:18px;border-radius:3px;border:none;background:rgba(255,255,255,.85);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.bar-action:hover{background:white}
+.add-item-btn{position:absolute;left:50%;transform:translateX(-50%);display:none;padding:2px 8px;background:var(--indigo);color:white;border:none;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;z-index:3}
+.bars-area:hover .add-item-btn{display:block}
+
+/* FOOTER STRIP */
+.footer-qstrip{display:flex;border-top:1px solid var(--slate100);background:#fafbfc}
+.footer-label-pad{flex-shrink:0;padding:10px 16px}
+.footer-q-cells{flex:1;display:flex}
+.footer-q-cell{flex:1;text-align:center;font-size:10px;font-weight:600;padding:10px 0;color:var(--slate400)}
+
+/* BOTTOM PANELS */
+.bottom-panels{display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--slate200);background:white;box-shadow:var(--shadow)}
+@media(max-width:900px){.bottom-panels{grid-template-columns:1fr}}
+.panel{padding:24px;border-right:1px solid var(--slate100)}
+.panel:last-child{border-right:none}
+.panel-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.panel-icon-box{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.panel-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--slate700)}
+.insight-item{display:flex;gap:10px;margin-bottom:12px}
+.insight-dot{width:6px;height:6px;border-radius:50%;background:var(--indigo-light);margin-top:5px;flex-shrink:0}
+.insight-label{font-size:11px;font-weight:600;color:var(--slate700)}
+.insight-detail{font-size:11px;color:var(--slate400);line-height:1.5;margin-top:2px}
+.split-bar{display:flex;border-radius:4px;overflow:hidden;height:20px;margin-top:12px;font-size:9px;font-weight:700}
+.split-bar div{display:flex;align-items:center;justify-content:center}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi-card{background:var(--slate50);border-radius:8px;padding:12px;display:flex;align-items:center;gap:10px}
+.kpi-icon-box{width:32px;height:32px;border-radius:8px;background:white;box-shadow:0 1px 3px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.kpi-val{font-size:17px;font-weight:800;color:var(--slate900);line-height:1}
+.kpi-lbl{font-size:10px;color:var(--slate400);margin-top:2px;line-height:1.3}
+.tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--slate100);color:var(--slate600);border:1px solid var(--slate200);display:inline-block;margin:2px}
+
+/* FIXED LEGEND BOX */
+.legend-box{position:fixed;bottom:20px;left:24px;background:white;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--slate200);padding:14px 16px;z-index:40}
+.legend-box-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate300);margin-bottom:8px}
+.legend-box-item{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.legend-box-item:last-child{margin-bottom:0}
+.legend-swatch{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px}
+
+/* TOOLTIP */
+.tooltip{position:fixed;z-index:100;background:white;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--slate200);padding:16px;width:300px;pointer-events:none}
+.tooltip-title{font-size:13px;font-weight:700;color:var(--slate900);margin-bottom:8px;line-height:1.35}
+.tooltip-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-bottom:6px}
+.tooltip-sub{font-size:11px;font-weight:500;color:var(--slate500);margin-bottom:8px}
+.tooltip-desc{font-size:11px;color:var(--slate600);line-height:1.6;border-top:1px solid var(--slate100);padding-top:8px;margin-top:4px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:white;border-radius:16px;width:500px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,.25)}
+.modal-hdr{padding:20px 24px 16px;border-bottom:1px solid var(--slate100);display:flex;justify-content:space-between;align-items:center}
+.modal-hdr h3{font-size:16px;font-weight:700;color:var(--slate900)}
+.modal-close{width:28px;height:28px;border-radius:6px;border:1px solid var(--slate200);background:var(--slate50);color:var(--slate600);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:20px 24px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--slate400);margin-bottom:5px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1px solid var(--slate200);border-radius:8px;font-size:13px;font-family:inherit;color:var(--slate800);outline:none;transition:border-color .15s;background:white}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--indigo)}
+.form-group textarea{resize:vertical;min-height:72px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--slate100);display:flex;gap:8px;justify-content:flex-end}
+.m-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.m-btn.cancel{background:var(--slate100);color:var(--slate700)}
+.m-btn.cancel:hover{background:var(--slate200)}
+.m-btn.save{background:var(--indigo);color:white}
+.m-btn.save:hover{background:#4f46e5}
+.m-btn.danger{background:#fef2f2;color:#ef4444;border:1px solid #fecaca}
+.m-btn.danger:hover{background:#fee2e2}
+
+/* FILTER TAGS */
+.filter-tags{padding:8px 32px;background:var(--slate50);border-bottom:1px solid var(--slate200);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.filter-tag{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.filter-tag.active{background:var(--indigo);color:white;border-color:var(--indigo)}
+.filter-tag:not(.active){background:white;color:var(--slate600);border-color:var(--slate200)}
+.filter-tag:not(.active):hover{border-color:var(--indigo);color:var(--indigo)}
+.filter-sep{font-size:10px;color:var(--slate300);padding:0 2px}
+
+@media print{
+  .toolbar,.filter-tags,.legend-box,.hdr .legend-strip,.theme-edit-btn,.bar-actions,.add-item-btn,.tb-btn{display:none!important}
+  .hdr{position:relative!important;top:auto!important}
+  .col-header{position:relative!important;top:auto!important}
+  body{background:white}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="text/babel">
+const { useState, useRef, useCallback, useEffect, useMemo } = React;
+
+/* ── CONSTANTS ─────────────────────────────────────────────────── */
+const LABEL_W = 200;
+const BAR_H   = 36;
+const LANE_PAD = 10;
+const LANE_GAP = 6;
+const LANE_TOTAL = BAR_H + LANE_GAP;
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const QUARTERS = ["Q1","Q2","Q3","Q4"];
+const Q_RANGES = ["Jan – Mar","Apr – Jun","Jul – Sep","Oct – Dec"];
+const pct  = n => `${(n/12)*100}%`;
+const barL = s => `calc(${pct(s)} + 3px)`;
+const barW = (s,e) => `calc(${pct(e-s+1)} - 6px)`;
+const dur  = (s,e) => s===e ? MONTHS[s] : `${MONTHS[s]} – ${MONTHS[e]}`;
+
+const STATUSES = {
+  completed:       { fill:"#d1fae5", stroke:"#059669", text:"#065f46", label:"Completed",               icon:"✓" },
+  "in-review":     { fill:"#ede9fe", stroke:"#7c3aed", text:"#5b21b6", label:"In Review",               icon:"◐" },
+  "in-progress":   { fill:"#ffedd5", stroke:"#f97316", text:"#9a3412", label:"In Progress",             icon:"●" },
+  "to-be-defined": { fill:"#e2e8f0", stroke:"#94a3b8", text:"#475569", label:"To Be Defined",           icon:"?" },
+};
+
+const THEME_ICONS = {
+  "Florist App":             { emoji:"📱", color:"#f59e0b" },
+  "OMS & Operations":        { emoji:"🔄", color:"#3b82f6" },
+  "Customer Service":        { emoji:"🎧", color:"#10b981" },
+  "Inventory & WMS":         { emoji:"📦", color:"#14b8a6" },
+  "Intelligence & AI":       { emoji:"⚡", color:"#6366f1" },
+  "Design System & Research":{ emoji:"🎨", color:"#8b5cf6" },
+};
+
+function getThemeColor(name) {
+  return THEME_ICONS[name]?.color || "#6366f1";
+}
+function getThemeEmoji(name) {
+  return THEME_ICONS[name]?.emoji || "📌";
+}
+
+/* ── INITIAL DATA ──────────────────────────────────────────────── */
+const INIT_THEMES = [
+  {
+    id:"florist", name:"Florist App",
+    items:[
+      { id:"f1", name:"A6 Card Enhancements", start:0, end:0, status:"completed", sub:"Dec 29 – Jan 11 · Design Handoff", desc:"A6 card enhancements and adding service-type filter inside the florist app." },
+      { id:"f2", name:"Add Bag — Small Task", start:0, end:0, status:"completed", sub:"Jan · Quick Help", desc:"Small design support task — Add Bag feature for the florist app." },
+      { id:"f3", name:"3 Small Florist App Tickets", start:1, end:1, status:"completed", sub:"Feb 16 · 1 day", desc:"Three small UI improvement tickets for the florist app, resolved in a single design session." },
+      { id:"f4", name:"Show Product Tier Tagging", start:6, end:6, status:"in-review", sub:"Q3 · Jul · Small Task", desc:"Surface product tier tags inside the florist app so florists can see product quality tiers at a glance." },
+      { id:"f5", name:"Guideline & Technique Video Link per SKU", start:6, end:6, status:"in-review", sub:"Q3 · Jul · Small Task", desc:"Attach a guideline/technique video link to every SKU in the florist app so florists can reference arrangement instructions inline." },
+    ],
+  },
+  {
+    id:"oms", name:"OMS & Operations",
+    items:[
+      { id:"o1", name:"Hub Changes — Express Delivery", start:0, end:1, status:"completed", sub:"Jan – Feb · Design Handoff", desc:"Hub-level UX changes to support express delivery order flows — surfacing time-critical orders and routing logic for ops agents." },
+      { id:"o2", name:"Change Time Slots", start:0, end:0, status:"completed", sub:"Jan 27 – Feb 2 · Design Handoff", desc:"Jira CHAR-5441 — UI for agents to change delivery time slots on live orders." },
+      { id:"o3", name:"Production System 2.0 — Enhancements", start:1, end:2, status:"completed", sub:"Feb – Mar · Design Handoff", desc:"Enhancements to the production operations system — operation ticket improvements and workflow updates." },
+      { id:"o4", name:"Sherlock OMS Agent — Slice 1", start:2, end:3, status:"completed", ongoingEnd:6, ongoingLabel:"Post-handoff enhancements — PMs continued requesting UI tweaks, grooming changes, and Slice 1 updates throughout May–Jun alongside dev build.", sub:"Mar 2 – Apr 16 · PRD & Full Design", desc:"Sherlock is the AI-powered OMS agent system. Slice 1 covers the core agent interface — order lookup, AI-assisted triage, and action recommendations. Delivered across Ramadan, Eid, and public holidays." },
+      { id:"o5", name:"Dynamic Address Validation Engine", start:4, end:4, status:"completed", sub:"May 10 – 13 · Design Handoff", desc:"Jira CHAR-6416 — UI for the dynamic address scoring and validation engine." },
+      { id:"o6", name:"Sherlock OMS Agent — Slice 2", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · Pending Grooming", desc:"Slice 2 scope to be finalised after grooming. UI changes expected based on Slice 1 learnings." },
+    ],
+  },
+  {
+    id:"cs", name:"Customer Service",
+    items:[
+      { id:"c1", name:"CS Dashboard", start:0, end:1, status:"completed", ongoingEnd:3, ongoingLabel:"Continued small refinements in Mar–Apr based on dev feedback and QA rounds during build.", sub:"Jan 18 – Feb 14 · Design Handoff", desc:"AI address scoring and CS dashboard — giving CS agents a unified view of address quality signals and order flags." },
+      { id:"c2", name:"Ticketing CS-OPS — Phase 1", start:4, end:4, status:"completed", sub:"May 10 – 20 · Design Handoff", desc:"Hub ticketing system revamp — Phase 1. Redesigned ticketing interface for CS and Ops agents." },
+      { id:"c3", name:"Ticketing CS-OPS — Phase 2", start:5, end:5, status:"completed", sub:"Jun 16 – 23 · Design Handoff", desc:"Phase 2 of the ticketing system revamp — extended categories and agent assignment flows." },
+      { id:"c4", name:"Link OMS Orders with Assigned Tickets", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · Interviews & Designs", desc:"Connect OMS order detail pages to their tickets — display per-order ticket flags with color-coded status." },
+      { id:"c5", name:"Customer Segmentation & Decision Tool", start:7, end:8, status:"in-review", sub:"Q3 · Aug – Sep · Interviews & Designs", desc:"Customer intelligence layer inside FlowardHub. Agents look up a customer by phone and receive a behavior profile, risk score, and real-time action recommendation." },
+      { id:"c6", name:"Order 360 — Full Interaction View & AI Summary", start:9, end:10, status:"to-be-defined", sub:"Q4 · Oct – Nov · Interviews & Designs", desc:"Unified timeline of full order interaction history across Sawt, Genesys, and Infobip." },
+      { id:"c7", name:"Ticketing System — SLA & Priority Tracking", start:9, end:10, status:"to-be-defined", sub:"Q4 · Oct – Nov · Interviews & Designs", desc:"Manager-configurable SLAs by ticket category/sub-category. Auto-tracks resolution SLA per ticket, flags breaches in real time." },
+      { id:"c8", name:"Ticketing System — Manager Reports View", start:10, end:11, status:"to-be-defined", sub:"Q4 · Nov – Dec · Interviews & Design Review", desc:"CS/Ops manager dashboard tracking team efficiency, ticket volumes, resolution times, and agent workload." },
+    ],
+  },
+  {
+    id:"wms", name:"Inventory & WMS",
+    items:[
+      { id:"w1", name:"Centralized Management of Item Stock Categories", start:1, end:1, status:"completed", sub:"Feb 1 – 2 · Design Handoff", desc:"Jira CHAR-5442 — UI for centralized control over item stock category assignments across the WMS." },
+      { id:"w2", name:"Daily Cycle Count — WMS Web & Mobile", start:1, end:1, status:"completed", sub:"Feb 12 – 19 · Design Handoff", desc:"Full daily cycle count module for WMS — web and mobile interfaces. Covers count workflow, discrepancy flagging, and supervisor review." },
+      { id:"w3", name:"Dynamic Inventory Transaction Reason Management", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · Spillover from Q2 · PRD", desc:"Enables warehouse managers to dynamically configure and manage transaction reason codes across inventory movements." },
+    ],
+  },
+  {
+    id:"ai", name:"Intelligence & AI",
+    items:[
+      { id:"a1", name:"Priority Engine — Project Optima", start:5, end:5, status:"completed", sub:"Jun 11 – 15 · Design Handoff", desc:"Project Optima — the Priority Engine for order and task prioritisation. Full design delivered in 3 days." },
+      { id:"a2", name:"Priority Engine — PRD Phase", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · PRD", desc:"PRD and design iteration for the priority engine — expanding scoring model logic, configuration UI, and integration with the OMS agent layer." },
+      { id:"a3", name:"AI QC Scoring Model — Florist App Integration", start:7, end:8, status:"in-review", sub:"Q3 · Aug – Sep · PRD", desc:"AI-powered quality control scoring model integrated into the florist app — automatically scoring bouquet and arrangement photos against quality benchmarks." },
+    ],
+  },
+  {
+    id:"ds", name:"Design System & Research",
+    items:[
+      { id:"d1", name:"Website Flow Audit", start:0, end:0, status:"completed", sub:"Jan · Small Task", desc:"Full UX audit of the consumer website flow — mapping user journeys, identifying friction points, and documenting findings for the product team." },
+      { id:"d2", name:"Workflow of Delivery App — Presentation", start:0, end:1, status:"completed", sub:"Jan – Feb · Research & Presentation", desc:"End-to-end workflow documentation and presentation of the delivery app." },
+      { id:"d3", name:"Design System for Operations", start:3, end:3, status:"completed", ongoingEnd:8, ongoingLabel:"Ongoing — new components, token updates, and design system maintenance as each product team adopts it and requests additions throughout the year.", sub:"Apr 14 – 24 · Design System", desc:"Built and published the operations design system — shared component library, token set, and documentation for all ops-facing products." },
+    ],
+  },
+];
+
+/* ── LANE PACKING ──────────────────────────────────────────────── */
+function packLanes(items) {
+  const laneEnd = [];
+  return items.map(p => {
+    const effectiveEnd = p.ongoingEnd ?? p.end;
+    let l = 0;
+    while (laneEnd[l] !== undefined && laneEnd[l] >= p.start) l++;
+    laneEnd[l] = effectiveEnd;
+    return { ...p, lane: l };
+  });
+}
+
+/* ── ID GEN ────────────────────────────────────────────────────── */
+let _idctr = 1000;
+const genId = () => 'id' + (++_idctr);
+
+/* ─────────────────────────────────────────────────────────────── */
+/*  MAIN APP                                                        */
+/* ─────────────────────────────────────────────────────────────── */
+function App() {
+  const [themes, setThemes] = useState(INIT_THEMES);
+  const [hovered, setHovered] = useState(null);
+  const [pos, setPos] = useState({x:0,y:0});
+  const [modal, setModal] = useState(null); // {type:'item'|'theme', ...}
+  const [search, setSearch] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [darkMode, setDarkMode] = useState(false);
+
+  /* derived counts */
+  const allItems = useMemo(() => themes.flatMap(t => t.items), [themes]);
+  const countBy = s => allItems.filter(i => i.status === s).length;
+
+  /* search/filter */
+  const filteredThemes = useMemo(() => {
+    return themes.map(t => ({
+      ...t,
+      items: t.items.filter(it => {
+        const matchSearch = !search || it.name.toLowerCase().includes(search.toLowerCase());
+        const matchStatus = filterStatus === 'all' || it.status === filterStatus;
+        return matchSearch && matchStatus;
+      })
+    }));
+  }, [themes, search, filterStatus]);
+
+  /* ── CRUD ── */
+  const saveItem = (themeId, item) => {
+    setThemes(prev => prev.map(t => {
+      if (t.id !== themeId) return t;
+      const exists = t.items.find(i => i.id === item.id);
+      if (exists) return { ...t, items: t.items.map(i => i.id === item.id ? item : i) };
+      return { ...t, items: [...t.items, item] };
+    }));
+    setModal(null);
+  };
+
+  const deleteItem = (themeId, itemId) => {
+    setThemes(prev => prev.map(t =>
+      t.id !== themeId ? t : { ...t, items: t.items.filter(i => i.id !== itemId) }
+    ));
+    setModal(null);
+  };
+
+  const saveTheme = (theme) => {
+    setThemes(prev => {
+      const exists = prev.find(t => t.id === theme.id);
+      if (exists) return prev.map(t => t.id === theme.id ? { ...t, name: theme.name } : t);
+      return [...prev, { ...theme, items: [] }];
+    });
+    setModal(null);
+  };
+
+  const deleteTheme = (themeId) => {
+    if (!confirm('Delete this entire theme and all its items?')) return;
+    setThemes(prev => prev.filter(t => t.id !== themeId));
+    setModal(null);
+  };
+
+  const moveItem = (fromThemeId, toThemeId, item) => {
+    setThemes(prev => prev.map(t => {
+      if (t.id === fromThemeId) return { ...t, items: t.items.filter(i => i.id !== item.id) };
+      if (t.id === toThemeId)   return { ...t, items: [...t.items, item] };
+      return t;
+    }));
+  };
+
+  /* ── EXPORT ── */
+  const exportJSON = () => {
+    const blob = new Blob([JSON.stringify(themes, null, 2)], { type:'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'roadmap-2026.json';
+    a.click();
+  };
+
+  const importJSON = () => {
+    const input = document.createElement('input');
+    input.type = 'file'; input.accept = '.json';
+    input.onchange = e => {
+      const r = new FileReader();
+      r.onload = ev => { try { setThemes(JSON.parse(ev.target.result)); } catch { alert('Invalid JSON'); } };
+      r.readAsText(e.target.files[0]);
+    };
+    input.click();
+  };
+
+  const printPage = () => window.print();
+
+  /* ── RENDER ── */
+  return (
+    <div id="app-root" style={darkMode ? {filter:'invert(1) hue-rotate(180deg)'} : {}}>
+      {/* HEADER */}
+      <header className="hdr">
+        <div className="hdr-inner">
+          <div>
+            <div className="hdr-title">Floward Product Design</div>
+            <h1 className="hdr-h1">2026 UX Design Roadmap</h1>
+            <p className="hdr-sub">Delivering operational excellence through intelligent systems, seamless experiences, and scalable design foundations.</p>
+          </div>
+          <div className="legend-strip">
+            {Object.entries(STATUSES).map(([key, cfg]) => (
+              <div key={key} className="legend-item" onClick={() => setFilterStatus(filterStatus===key?'all':key)}>
+                <div className="legend-dot" style={{background:cfg.fill, border:`1.5px solid ${cfg.stroke}`}}>
+                  <span style={{fontSize:9, color:cfg.stroke, fontWeight:800}}>{cfg.icon}</span>
+                </div>
+                <div>
+                  <div className="legend-label">{cfg.label}</div>
+                  <div className="legend-count">{countBy(key)} items</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      {/* TOOLBAR */}
+      <div className="toolbar">
+        <div className="search-wrap">
+          <span className="search-icon">🔍</span>
+          <input placeholder="Search items…" value={search} onChange={e=>setSearch(e.target.value)}/>
+        </div>
+        <div className="tb-sep"/>
+        <button className="tb-btn accent" onClick={() => setModal({type:'item', themeId: themes[0]?.id, item:null})}>＋ Add Item</button>
+        <button className="tb-btn" onClick={() => setModal({type:'theme', theme:null})}>＋ Add Theme</button>
+        <div className="tb-sep"/>
+        <button className="tb-btn success" onClick={exportJSON}>⬇ Export JSON</button>
+        <button className="tb-btn" onClick={importJSON}>⬆ Import JSON</button>
+        <button className="tb-btn" onClick={printPage}>🖨 Print</button>
+        <button className="tb-btn" onClick={() => setDarkMode(d => !d)}>{darkMode ? '☀️ Light' : '🌙 Dark'}</button>
+      </div>
+
+      {/* FILTER BAR */}
+      <div className="filter-tags">
+        <span style={{fontSize:10,fontWeight:700,color:'var(--slate400)',textTransform:'uppercase',letterSpacing:'.06em',marginRight:4}}>Filter:</span>
+        {[['all','All Items'],['completed','Completed'],['in-review','In Review'],['in-progress','In Progress'],['to-be-defined','To Be Defined']].map(([val,lbl]) => (
+          <button key={val} className={`filter-tag${filterStatus===val?' active':''}`} onClick={() => setFilterStatus(val)}>{lbl}</button>
+        ))}
+      </div>
+
+      {/* TIMELINE GRID */}
+      <div className="grid-wrap">
+        {/* Column headers */}
+        <div className="col-header">
+          <div className="col-label-cell" style={{width:LABEL_W}}>
+            <span className="col-label-text">Strategic Theme</span>
+          </div>
+          <div className="month-grid">
+            <div className="quarter-row">
+              {QUARTERS.map((q,qi) => (
+                <div key={q} className="quarter-cell" style={{
+                  color: qi%2===0 ? '#6366f1' : '#64748b',
+                  background: qi%2===0 ? 'rgba(99,102,241,.05)' : 'transparent'
+                }}>{q}</div>
+              ))}
+            </div>
+            <div className="month-row">
+              {MONTHS.map(m => <div key={m} className="month-cell">{m}</div>)}
+            </div>
+          </div>
+        </div>
+
+        {/* Theme rows */}
+        {filteredThemes.map(theme => {
+          const laned = packLanes(theme.items);
+          const maxLane = laned.reduce((m,p) => Math.max(m,p.lane), 0);
+          const rowH = LANE_PAD + (maxLane+1)*LANE_TOTAL + LANE_PAD + 28; // +28 for add btn
+          const color = getThemeColor(theme.name);
+          const emoji = getThemeEmoji(theme.name);
+
+          return (
+            <div key={theme.id} className="theme-row">
+              <div className="theme-label-cell" style={{width:LABEL_W, minHeight:rowH}}>
+                <div className="theme-label-inner">
+                  <div className="theme-icon-box" style={{background:color+'1a'}}>
+                    <span style={{fontSize:14}}>{emoji}</span>
+                  </div>
+                  <span className="theme-name" onClick={() => setModal({type:'theme', theme})}>{theme.name}</span>
+                  <button className="theme-edit-btn" onClick={() => setModal({type:'theme', theme})} title="Edit theme">✏️</button>
+                </div>
+              </div>
+
+              <div className="bars-area" style={{height:rowH}}>
+                {/* Quarter tints */}
+                {[0,2].map(qi => (
+                  <div key={qi} style={{position:'absolute',inset:'0 auto 0 0',left:pct(qi*3),width:'25%',background:'rgba(99,102,241,.025)',pointerEvents:'none'}}/>
+                ))}
+                {/* Month lines */}
+                {MONTHS.map((_,i) => (
+                  <div key={i} style={{position:'absolute',top:0,bottom:0,left:pct(i+1),width:1,background:'#e2e8f0',pointerEvents:'none'}}/>
+                ))}
+                {/* Quarter dividers */}
+                {[1,2,3].map(q => (
+                  <div key={q} style={{position:'absolute',top:0,bottom:0,left:pct(q*3),width:1,background:'#cbd5e1',pointerEvents:'none'}}/>
+                ))}
+
+                {laned.map((p) => {
+                  const cfg = STATUSES[p.status] || STATUSES.completed;
+                  const top = LANE_PAD + p.lane * LANE_TOTAL;
+                  return (
+                    <React.Fragment key={p.id}>
+                      {/* Ongoing dashed extension */}
+                      {p.ongoingEnd !== undefined && (
+                        <div
+                          className="bar bar-dashed"
+                          style={{
+                            left: pct(p.end+1), width:`calc(${pct(p.ongoingEnd-p.end)} - 4px)`,
+                            top: top+(BAR_H-26)/2, height:26,
+                            background:'#f0fdf4', border:'1.5px dashed #059669',
+                            borderRadius:'0 6px 6px 0',
+                          }}
+                          onMouseEnter={e => { setHovered({...p, name:`${p.name} — Enhancements`, desc:p.ongoingLabel, sub:`${MONTHS[p.end+1]} – ${MONTHS[p.ongoingEnd]} · Enhancements & grooming`}); setPos({x:e.clientX,y:e.clientY}); }}
+                          onMouseLeave={() => setHovered(null)}
+                          onMouseMove={e => setPos({x:e.clientX,y:e.clientY})}
+                        >
+                          <span style={{fontSize:9,fontWeight:700,fontStyle:'italic',color:'#059669',paddingLeft:6,overflow:'hidden',whiteSpace:'nowrap'}}>Enhancements & grooming</span>
+                        </div>
+                      )}
+                      {/* Main bar */}
+                      <div
+                        className="bar"
+                        style={{
+                          left: barL(p.start), width: barW(p.start, p.end),
+                          top, height: BAR_H,
+                          background: cfg.fill,
+                          border: `1.5px solid ${cfg.stroke}`,
+                          borderRadius: p.ongoingEnd !== undefined ? '6px 0 0 6px' : '6px',
+                        }}
+                        onMouseEnter={e => { setHovered(p); setPos({x:e.clientX,y:e.clientY}); }}
+                        onMouseLeave={() => setHovered(null)}
+                        onMouseMove={e => setPos({x:e.clientX,y:e.clientY})}
+                        onClick={() => setModal({type:'item', themeId: theme.id, item: p})}
+                      >
+                        <div className="bar-title" style={{color:cfg.text}}>{p.name}</div>
+                        <div className="bar-date" style={{color:cfg.stroke}}>{dur(p.start,p.end)}</div>
+                        <div className="bar-actions">
+                          <button className="bar-action" title="Edit" onClick={e=>{e.stopPropagation();setModal({type:'item',themeId:theme.id,item:p})}}>✏️</button>
+                          <button className="bar-action" title="Delete" onClick={e=>{e.stopPropagation();if(confirm('Delete this item?'))deleteItem(theme.id,p.id)}}>✕</button>
+                        </div>
+                      </div>
+                    </React.Fragment>
+                  );
+                })}
+
+                {/* Add button at bottom */}
+                <button
+                  className="add-item-btn"
+                  style={{bottom:6}}
+                  onClick={() => setModal({type:'item', themeId: theme.id, item: null})}
+                >＋ Add item to {theme.name}</button>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Footer strip */}
+        <div className="footer-qstrip">
+          <div className="footer-label-pad" style={{width:LABEL_W}}>
+            <span style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',color:'#94a3b8'}}>2026</span>
+          </div>
+          <div className="footer-q-cells">
+            {QUARTERS.map((q,qi) => (
+              <div key={q} className="footer-q-cell" style={{color:qi%2===0?'#818cf8':'#94a3b8'}}>
+                {q} · {Q_RANGES[qi]}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* BOTTOM PANELS */}
+      <div className="bottom-panels">
+        {/* Timeline Insights */}
+        <div className="panel">
+          <div className="panel-hdr">
+            <div className="panel-icon-box" style={{background:'#f5f3ff'}}>📅</div>
+            <span className="panel-title">Timeline Insights</span>
+          </div>
+          {[
+            { label:"Q1 — Foundation Sprint", detail:"9 initiatives delivered: A6 Card, Add Bag, CS Dashboard, Express Delivery, Change Time Slots, Florist Tickets, Stock Categories, Daily Cycle Count, Website Flow Audit." },
+            { label:"Q2 — Depth & Intelligence", detail:"8 initiatives delivered: Production System 2.0, Sherlock Slice 1, Design System for Ops, Dynamic Address Validation, Ticketing Phase 1 & 2, Priority Engine, Delivery App Workflow." },
+            { label:"Q3 — Starting Now", detail:"8 initiatives in interviews & design phase: Sherlock Slice 2, OMS Ticket Linking, Customer Segmentation Tool, Product Tier Tagging, Guideline Videos, Dynamic Inventory, Priority Engine PRD, AI QC Scoring Model." },
+            { label:"Q4 — Defined & TBD", detail:"3 CS initiatives defined (Order 360, SLA Tracking, Manager Reports). Additional Q4 scope to be finalised after Q3 grooming sessions." },
+          ].map((item,i) => (
+            <div key={i} className="insight-item">
+              <div className="insight-dot"/>
+              <div>
+                <div className="insight-label">{item.label}</div>
+                <div className="insight-detail">{item.detail}</div>
+              </div>
+            </div>
+          ))}
+          <div style={{marginTop:16,paddingTop:14,borderTop:'1px solid #f1f5f9'}}>
+            <div style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#94a3b8',marginBottom:8}}>Initiative split</div>
+            <div className="split-bar">
+              <div style={{width:'61%',background:'#d1fae5',color:'#065f46'}}>Q1–Q2 · 17 shipped</div>
+              <div style={{width:'39%',background:'#ede9fe',color:'#5b21b6'}}>Q3–Q4 · 11 planned</div>
+            </div>
+          </div>
+        </div>
+
+        {/* About */}
+        <div className="panel">
+          <div className="panel-hdr">
+            <div className="panel-icon-box" style={{background:'#eff6ff'}}>ℹ️</div>
+            <span className="panel-title">About This Roadmap</span>
+          </div>
+          <p style={{fontSize:12,color:'#64748b',lineHeight:1.7,marginBottom:10}}>
+            This roadmap covers the UX design work across <strong style={{color:'#334155'}}>6 strategic themes</strong> and <strong style={{color:'#334155'}}>{allItems.length} total initiatives</strong> throughout 2026.
+          </p>
+          <p style={{fontSize:12,color:'#64748b',lineHeight:1.7,marginBottom:10}}>
+            <strong style={{color:'#334155'}}>Q1 & Q2 are complete</strong> — all 17 initiatives designed and handed off to dev. <strong style={{color:'#334155'}}>Q3 begins now</strong> with 8 initiatives entering interviews and design phase.
+          </p>
+          <p style={{fontSize:12,color:'#64748b',lineHeight:1.7}}>
+            <strong style={{color:'#334155'}}>Q4 has 3 CS initiatives defined</strong> (Order 360, SLA tracking, Manager Reports) with additional scope to be determined after Q3 grooming.
+          </p>
+          <div style={{marginTop:16,paddingTop:12,borderTop:'1px solid #f1f5f9',display:'flex',alignItems:'center',gap:8}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:'#10b981'}}/>
+            <span style={{fontSize:10,color:'#94a3b8'}}>Updated June 2026 · Floward UX Design Team</span>
+          </div>
+        </div>
+
+        {/* Impact */}
+        <div className="panel">
+          <div className="panel-hdr">
+            <div className="panel-icon-box" style={{background:'#ecfdf5'}}>🎯</div>
+            <span className="panel-title">Impact & Contribution</span>
+          </div>
+          <div className="kpi-grid">
+            {[
+              {icon:'🎨', val:'6',    lbl:'Strategic themes'},
+              {icon:'📅', val:allItems.length, lbl:'Total initiatives'},
+              {icon:'✅', val:countBy('completed'), lbl:'Completed (Q1–Q2)'},
+              {icon:'🌍', val:'4+',   lbl:'Markets impacted'},
+              {icon:'👥', val:'~200', lbl:'Agents & ops users'},
+              {icon:'⚡', val:'3',    lbl:'AI features shipping'},
+            ].map(({icon,val,lbl}) => (
+              <div key={lbl} className="kpi-card">
+                <div className="kpi-icon-box">{icon}</div>
+                <div>
+                  <div className="kpi-val">{val}</div>
+                  <div className="kpi-lbl">{lbl}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{paddingTop:12,borderTop:'1px solid #f1f5f9'}}>
+            <div style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#94a3b8',marginBottom:8}}>Key product systems</div>
+            <div>
+              {["Sherlock OMS Agent","Priority Engine","CS Ticketing","CS Dashboard","Daily Cycle Count","Design System for Ops","AI QC Scoring"].map(tag => (
+                <span key={tag} className="tag">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FIXED LEGEND */}
+      <div className="legend-box">
+        <div className="legend-box-title">Status Legend</div>
+        {Object.entries(STATUSES).map(([key,cfg]) => (
+          <div key={key} className="legend-box-item">
+            <div className="legend-swatch" style={{background:cfg.fill, border:`1.5px solid ${cfg.stroke}`}}>
+              <span style={{color:cfg.stroke, fontWeight:900}}>{cfg.icon}</span>
+            </div>
+            <span style={{fontSize:11,color:'#475569'}}>{cfg.label}</span>
+          </div>
+        ))}
+        <div className="legend-box-item" style={{paddingTop:6,marginTop:4,borderTop:'1px solid #f1f5f9'}}>
+          <div className="legend-swatch" style={{background:'#f0fdf4',backgroundImage:'repeating-linear-gradient(-45deg,transparent,transparent 3px,rgba(5,150,105,.15) 3px,rgba(5,150,105,.15) 6px)',border:'1.5px dashed #059669'}}/>
+          <span style={{fontSize:10,color:'#64748b',lineHeight:1.35}}>Design done<br/>Ongoing enhancements</span>
+        </div>
+      </div>
+
+      {/* TOOLTIP */}
+      {hovered && (
+        <div className="tooltip" style={{
+          left: Math.min(pos.x+16, (window.innerWidth||1400)-316),
+          top:  Math.max(pos.y-10, 8)
+        }}>
+          <div className="tooltip-title">{hovered.name}</div>
+          <span className="tooltip-badge" style={{background:STATUSES[hovered.status]?.fill, color:STATUSES[hovered.status]?.text, border:`1px solid ${STATUSES[hovered.status]?.stroke}`}}>
+            {STATUSES[hovered.status]?.label}
+          </span>
+          {hovered.sub && <div className="tooltip-sub">{hovered.sub}</div>}
+          {hovered.desc && <div className="tooltip-desc">{hovered.desc}</div>}
+        </div>
+      )}
+
+      {/* MODALS */}
+      {modal?.type === 'item' && (
+        <ItemModal
+          themes={themes}
+          themeId={modal.themeId}
+          item={modal.item}
+          onSave={(themeId, item, origThemeId) => {
+            if (origThemeId && origThemeId !== themeId) moveItem(origThemeId, themeId, item);
+            else saveItem(themeId, item);
+          }}
+          onDelete={(themeId, itemId) => deleteItem(themeId, itemId)}
+          onClose={() => setModal(null)}
+        />
+      )}
+      {modal?.type === 'theme' && (
+        <ThemeModal
+          theme={modal.theme}
+          onSave={saveTheme}
+          onDelete={deleteTheme}
+          onClose={() => setModal(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/*  ITEM MODAL                                                      */
+/* ─────────────────────────────────────────────────────────────── */
+function ItemModal({ themes, themeId, item, onSave, onDelete, onClose }) {
+  const isNew = !item;
+  const [form, setForm] = useState({
+    id:     item?.id || genId(),
+    name:   item?.name || '',
+    start:  item?.start ?? 0,
+    end:    item?.end ?? 0,
+    ongoingEnd: item?.ongoingEnd ?? '',
+    ongoingLabel: item?.ongoingLabel || '',
+    status: item?.status || 'completed',
+    sub:    item?.sub || '',
+    desc:   item?.desc || '',
+    themeId: themeId,
+  });
+
+  const set = (k,v) => setForm(f => ({...f, [k]:v}));
+
+  const handleSave = () => {
+    if (!form.name.trim()) { alert('Please enter an item name.'); return; }
+    const clean = {
+      id: form.id,
+      name: form.name.trim(),
+      start: +form.start,
+      end: +form.end,
+      status: form.status,
+      sub: form.sub.trim(),
+      desc: form.desc.trim(),
+    };
+    if (form.ongoingEnd !== '') clean.ongoingEnd = +form.ongoingEnd;
+    if (form.ongoingLabel) clean.ongoingLabel = form.ongoingLabel.trim();
+    onSave(form.themeId, clean, item ? themeId : null);
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+      <div className="modal">
+        <div className="modal-hdr">
+          <h3>{isNew ? '＋ Add Roadmap Item' : '✏️ Edit Roadmap Item'}</h3>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">
+          <div className="form-group">
+            <label>Item Name *</label>
+            <input value={form.name} onChange={e => set('name',e.target.value)} placeholder="e.g. New Feature Design"/>
+          </div>
+          <div className="form-group">
+            <label>Theme</label>
+            <select value={form.themeId} onChange={e => set('themeId',e.target.value)}>
+              {themes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Status</label>
+            <select value={form.status} onChange={e => set('status',e.target.value)}>
+              {Object.entries(STATUSES).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
+            </select>
+          </div>
+          <div className="form-row">
+            <div className="form-group" style={{marginBottom:0}}>
+              <label>Start Month</label>
+              <select value={form.start} onChange={e => set('start',e.target.value)}>
+                {MONTHS.map((m,i) => <option key={i} value={i}>{m}</option>)}
+              </select>
+            </div>
+            <div className="form-group" style={{marginBottom:0}}>
+              <label>End Month</label>
+              <select value={form.end} onChange={e => set('end',e.target.value)}>
+                {MONTHS.map((m,i) => <option key={i} value={i}>{m}</option>)}
+              </select>
+            </div>
+          </div>
+          <div style={{marginBottom:14,marginTop:14}}>
+            <div className="form-group">
+              <label>Ongoing Extension End (optional)</label>
+              <select value={form.ongoingEnd} onChange={e => set('ongoingEnd',e.target.value)}>
+                <option value="">— None —</option>
+                {MONTHS.map((m,i) => <option key={i} value={i}>{m}</option>)}
+              </select>
+            </div>
+            {form.ongoingEnd !== '' && (
+              <div className="form-group">
+                <label>Ongoing Extension Label</label>
+                <textarea value={form.ongoingLabel} onChange={e => set('ongoingLabel',e.target.value)} placeholder="Describe what continues in the dashed extension…"/>
+              </div>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Sub-label / Duration note</label>
+            <input value={form.sub} onChange={e => set('sub',e.target.value)} placeholder="e.g. Mar 2 – Apr 16 · Design Handoff"/>
+          </div>
+          <div className="form-group">
+            <label>Description (shown in tooltip)</label>
+            <textarea value={form.desc} onChange={e => set('desc',e.target.value)} placeholder="Describe what this initiative covers…"/>
+          </div>
+        </div>
+        <div className="modal-footer">
+          {!isNew && <button className="m-btn danger" onClick={() => { if(confirm('Delete this item?')) onDelete(themeId, item.id); }}>Delete</button>}
+          <button className="m-btn cancel" onClick={onClose}>Cancel</button>
+          <button className="m-btn save" onClick={handleSave}>{isNew ? 'Add Item' : 'Save Changes'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────── */
+/*  THEME MODAL                                                     */
+/* ─────────────────────────────────────────────────────────────── */
+function ThemeModal({ theme, onSave, onDelete, onClose }) {
+  const isNew = !theme;
+  const [name, setName] = useState(theme?.name || '');
+
+  const handleSave = () => {
+    if (!name.trim()) { alert('Please enter a theme name.'); return; }
+    onSave({ id: theme?.id || genId(), name: name.trim(), items: theme?.items || [] });
+  };
+
+  return (
+    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+      <div className="modal" style={{width:380}}>
+        <div className="modal-hdr">
+          <h3>{isNew ? '＋ Add Theme' : '✏️ Edit Theme'}</h3>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-body">
+          <div className="form-group">
+            <label>Theme Name *</label>
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mobile Experience"/>
+          </div>
+          <p style={{fontSize:11,color:'#94a3b8',lineHeight:1.5}}>
+            Icons and colors are automatically assigned based on the theme name. You can customize them further by editing the source data.
+          </p>
+        </div>
+        <div className="modal-footer">
+          {!isNew && <button className="m-btn danger" onClick={() => onDelete(theme.id)}>Delete Theme</button>}
+          <button className="m-btn cancel" onClick={onClose}>Cancel</button>
+          <button className="m-btn save" onClick={handleSave}>{isNew ? 'Add Theme' : 'Save Changes'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App/>, document.getElementById('app'));
+</script>
+</body>
+</html>
