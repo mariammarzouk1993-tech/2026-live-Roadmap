@@ -46,7 +46,7 @@ body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:1
 .legend-count{font-size:10px;color:var(--slate400)}
 
 /* TOOLBAR */
-.toolbar{background:white;border-bottom:1px solid var(--slate200);padding:8px 32px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar{background:white;border-bottom:1px solid var(--slate200);padding:8px 32px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:sticky;top:var(--hdr-h,88px);z-index:40}
 .tb-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--slate200);background:var(--slate50);color:var(--slate700);transition:all .15s;font-family:inherit}
 .tb-btn:hover{background:var(--slate100);border-color:var(--slate300)}
 .tb-btn.accent{background:var(--indigo);color:white;border-color:var(--indigo)}
@@ -59,9 +59,15 @@ body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:1
 .search-wrap input:focus{border-color:var(--indigo);background:white}
 .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--slate400);font-size:13px;pointer-events:none}
 
-/* GRID */
-.grid-wrap{background:white;box-shadow:var(--shadow);overflow-x:auto}
-.col-header{display:flex;position:sticky;top:56px;z-index:20;background:white;border-bottom:1px solid var(--slate200)}
+/* GRID — single overflow-x:auto scroll container.
+   col-header is position:sticky inside it; `top` is set by JS
+   to equal the measured height of the three sticky bars above. */
+.grid-outer{background:white;box-shadow:var(--shadow)}
+.grid-scroll{overflow-x:auto;overflow-y:visible}
+.grid-wrap{background:white;box-shadow:var(--shadow);overflow-x:auto}/* legacy alias */
+
+/* col-header top set dynamically via inline style */
+.col-header{display:flex;position:sticky;z-index:20;background:white;border-bottom:1px solid var(--slate200);min-width:max-content}
 .col-label-cell{flex-shrink:0;border-right:1px solid var(--slate200);padding:0 16px 8px;display:flex;align-items:flex-end}
 .col-label-text{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate300)}
 .month-grid{flex:1;min-width:0}
@@ -72,7 +78,8 @@ body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:1
 .month-cell:last-child{border-right:none}
 
 /* THEME ROWS */
-.theme-row{display:flex;border-bottom:1px solid var(--slate100)}
+.rows-container{min-width:max-content}
+.theme-row{display:flex;border-bottom:1px solid var(--slate100);min-width:max-content}
 .theme-row:last-child{border-bottom:none}
 .theme-row:hover{background:rgba(248,250,252,.4)}
 .theme-label-cell{flex-shrink:0;display:flex;align-items:center;padding:0 16px;border-right:1px solid var(--slate100);gap:0}
@@ -161,7 +168,7 @@ body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:1
 .m-btn.danger:hover{background:#fee2e2}
 
 /* FILTER TAGS */
-.filter-tags{padding:8px 32px;background:var(--slate50);border-bottom:1px solid var(--slate200);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.filter-tags{padding:8px 32px;background:var(--slate50);border-bottom:1px solid var(--slate200);display:flex;gap:6px;flex-wrap:wrap;align-items:center;position:sticky;top:var(--hdr-toolbar-h,130px);z-index:39}
 .filter-tag{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s}
 .filter-tag.active{background:var(--indigo);color:white;border-color:var(--indigo)}
 .filter-tag:not(.active){background:white;color:var(--slate600);border-color:var(--slate200)}
@@ -307,6 +314,29 @@ function App() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [darkMode, setDarkMode] = useState(false);
+  const [colHeaderTop, setColHeaderTop] = useState(0);
+
+  /* Measure the combined height of all sticky bars above the grid
+     so the col-header sticks at exactly the right scroll position. */
+  const hdrRef     = useRef(null);
+  const toolbarRef = useRef(null);
+  const filterRef  = useRef(null);
+
+  useEffect(() => {
+    function measure() {
+      const h1 = hdrRef.current?.offsetHeight     || 0;
+      const h2 = toolbarRef.current?.offsetHeight || 0;
+      const h3 = filterRef.current?.offsetHeight  || 0;
+      // Update CSS custom properties so .toolbar and .filter-tags get correct sticky tops
+      document.documentElement.style.setProperty('--hdr-h',          `${h1}px`);
+      document.documentElement.style.setProperty('--hdr-toolbar-h',  `${h1 + h2}px`);
+      setColHeaderTop(h1 + h2 + h3);
+    }
+    // Small delay so refs are measured after first paint
+    const t = setTimeout(measure, 0);
+    window.addEventListener('resize', measure);
+    return () => { clearTimeout(t); window.removeEventListener('resize', measure); };
+  }, []);
 
   /* derived counts */
   const allItems = useMemo(() => themes.flatMap(t => t.items), [themes]);
@@ -391,7 +421,7 @@ function App() {
   return (
     <div id="app-root" style={darkMode ? {filter:'invert(1) hue-rotate(180deg)'} : {}}>
       {/* HEADER */}
-      <header className="hdr">
+      <header className="hdr" ref={hdrRef}>
         <div className="hdr-inner">
           <div>
             <div className="hdr-title">Floward Product Design</div>
@@ -415,7 +445,7 @@ function App() {
       </header>
 
       {/* TOOLBAR */}
-      <div className="toolbar">
+      <div className="toolbar" ref={toolbarRef}>
         <div className="search-wrap">
           <span className="search-icon">🔍</span>
           <input placeholder="Search items…" value={search} onChange={e=>setSearch(e.target.value)}/>
@@ -431,21 +461,30 @@ function App() {
       </div>
 
       {/* FILTER BAR */}
-      <div className="filter-tags">
+      <div className="filter-tags" ref={filterRef}>
         <span style={{fontSize:10,fontWeight:700,color:'var(--slate400)',textTransform:'uppercase',letterSpacing:'.06em',marginRight:4}}>Filter:</span>
         {[['all','All Items'],['completed','Completed'],['in-review','In Review'],['in-progress','In Progress'],['to-be-defined','To Be Defined']].map(([val,lbl]) => (
           <button key={val} className={`filter-tag${filterStatus===val?' active':''}`} onClick={() => setFilterStatus(val)}>{lbl}</button>
         ))}
       </div>
 
-      {/* TIMELINE GRID */}
-      <div className="grid-wrap">
-        {/* Column headers */}
-        <div className="col-header">
+      {/* TIMELINE GRID
+          ─────────────────────────────────────────────────────────
+          Single overflow-x:auto container holds both col-header and rows.
+          col-header is position:sticky with top = measured offset of all
+          sticky bars above it, so it pins just below the filter bar when
+          scrolling vertically, while horizontal scroll works naturally
+          since everything is in the same scroll container.
+      */}
+      <div className="grid-outer">
+        <div className="grid-scroll">
+
+        {/* Column header — sticky vertical, scrolls horizontally with rows */}
+        <div className="col-header" style={{minWidth:'max-content', top: colHeaderTop}}>
           <div className="col-label-cell" style={{width:LABEL_W}}>
             <span className="col-label-text">Strategic Theme</span>
           </div>
-          <div className="month-grid">
+          <div className="month-grid" style={{minWidth:0,flex:1}}>
             <div className="quarter-row">
               {QUARTERS.map((q,qi) => (
                 <div key={q} className="quarter-cell" style={{
@@ -554,7 +593,7 @@ function App() {
         })}
 
         {/* Footer strip */}
-        <div className="footer-qstrip">
+        <div className="footer-qstrip" style={{minWidth:'max-content'}}>
           <div className="footer-label-pad" style={{width:LABEL_W}}>
             <span style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',color:'#94a3b8'}}>2026</span>
           </div>
@@ -566,7 +605,8 @@ function App() {
             ))}
           </div>
         </div>
-      </div>
+        </div>{/* end grid-scroll */}
+      </div>{/* end grid-outer */}
 
       {/* BOTTOM PANELS */}
       <div className="bottom-panels">
