@@ -59,15 +59,47 @@ body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:1
 .search-wrap input:focus{border-color:var(--indigo);background:white}
 .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--slate400);font-size:13px;pointer-events:none}
 
-/* GRID — single overflow-x:auto scroll container.
-   col-header is position:sticky inside it; `top` is set by JS
-   to equal the measured height of the three sticky bars above. */
-.grid-outer{background:white;box-shadow:var(--shadow)}
-.grid-scroll{overflow-x:auto;overflow-y:visible}
-.grid-wrap{background:white;box-shadow:var(--shadow);overflow-x:auto}/* legacy alias */
+/* ═══════════════════════════════════════════════════════════════
+   GRID LAYOUT — scroll-sync two-container pattern
+   ───────────────────────────────────────────────────────────────
+   WHY: position:sticky is blocked by any ancestor with overflow≠visible.
+   So the col-header CANNOT be sticky inside overflow-x:auto.
 
-/* col-header top set dynamically via inline style */
-.col-header{display:flex;position:sticky;z-index:20;background:white;border-bottom:1px solid var(--slate200);min-width:max-content}
+   SOLUTION: Two separate overflow-x:auto siblings that are kept in
+   horizontal sync via a shared scrollLeft JS listener.
+   The col-header container has overflow:hidden (user can't scroll it
+   manually) and gets its scrollLeft updated from the rows container.
+   The col-header itself is position:sticky on the PAGE (no overflow
+   ancestor), so vertical sticking works perfectly.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Outer wrapper — white bg, shadow, no overflow */
+.grid-outer{background:white;box-shadow:var(--shadow)}
+
+/* Header scroll container = the sticky element itself.
+   overflow:hidden hides the scrollbar but lets JS set scrollLeft.
+   position:sticky on THIS element — it has no overflow ancestor,
+   so sticky works correctly. top is set via inline style by JS. */
+.grid-head-scroll{
+  overflow:hidden;
+  background:white;
+  border-bottom:1px solid var(--slate200);
+  position:sticky;
+  top:0; /* overridden by inline style */
+  z-index:30;
+}
+
+/* .grid-head-sticky is now unused — kept as no-op for safety */
+.grid-head-sticky{}
+
+/* Rows scroll container — the one the user actually scrolls horizontally */
+.grid-rows-scroll{overflow-x:auto;overflow-y:visible}
+
+/* legacy alias kept so nothing else breaks */
+.grid-wrap{background:white;box-shadow:var(--shadow);overflow-x:auto}
+
+/* Column header visuals */
+.col-header{display:flex;min-width:max-content}
 .col-label-cell{flex-shrink:0;border-right:1px solid var(--slate200);padding:0 16px 8px;display:flex;align-items:flex-end}
 .col-label-text{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate300)}
 .month-grid{flex:1;min-width:0}
@@ -314,28 +346,49 @@ function App() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [darkMode, setDarkMode] = useState(false);
-  const [colHeaderTop, setColHeaderTop] = useState(0);
+  const [stickyTop, setStickyTop] = useState(0); // px offset for sticky col-header
 
-  /* Measure the combined height of all sticky bars above the grid
-     so the col-header sticks at exactly the right scroll position. */
+  /* Refs for the three sticky bars above the grid */
   const hdrRef     = useRef(null);
   const toolbarRef = useRef(null);
   const filterRef  = useRef(null);
 
+  /* Refs for the two scroll-sync containers */
+  const rowsScrollRef = useRef(null); // the one the user scrolls (rows)
+  const headScrollRef = useRef(null); // header mirror (overflow:hidden, driven by JS)
+
+  /* ── Measure sticky offset + set up horizontal scroll sync ── */
   useEffect(() => {
-    function measure() {
+    /* 1. Measure the total height of all sticky bars above the grid
+          so the col-header sticks at exactly that offset on page scroll */
+    function measureTop() {
       const h1 = hdrRef.current?.offsetHeight     || 0;
       const h2 = toolbarRef.current?.offsetHeight || 0;
       const h3 = filterRef.current?.offsetHeight  || 0;
-      // Update CSS custom properties so .toolbar and .filter-tags get correct sticky tops
-      document.documentElement.style.setProperty('--hdr-h',          `${h1}px`);
-      document.documentElement.style.setProperty('--hdr-toolbar-h',  `${h1 + h2}px`);
-      setColHeaderTop(h1 + h2 + h3);
+      setStickyTop(h1 + h2 + h3);
+      /* Also keep CSS vars updated for .toolbar and .filter-tags sticky tops */
+      document.documentElement.style.setProperty('--hdr-h',         `${h1}px`);
+      document.documentElement.style.setProperty('--hdr-toolbar-h', `${h1 + h2}px`);
     }
-    // Small delay so refs are measured after first paint
-    const t = setTimeout(measure, 0);
-    window.addEventListener('resize', measure);
-    return () => { clearTimeout(t); window.removeEventListener('resize', measure); };
+
+    /* 2. Sync header horizontal scroll from rows scroll */
+    function syncHead() {
+      if (headScrollRef.current && rowsScrollRef.current) {
+        headScrollRef.current.scrollLeft = rowsScrollRef.current.scrollLeft;
+      }
+    }
+
+    const rowsEl = rowsScrollRef.current;
+    if (rowsEl) rowsEl.addEventListener('scroll', syncHead, { passive: true });
+
+    const t = setTimeout(measureTop, 0);
+    window.addEventListener('resize', measureTop);
+
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', measureTop);
+      if (rowsEl) rowsEl.removeEventListener('scroll', syncHead);
+    };
   }, []);
 
   /* derived counts */
@@ -468,145 +521,159 @@ function App() {
         ))}
       </div>
 
-      {/* TIMELINE GRID
-          ─────────────────────────────────────────────────────────
-          Single overflow-x:auto container holds both col-header and rows.
-          col-header is position:sticky with top = measured offset of all
-          sticky bars above it, so it pins just below the filter bar when
-          scrolling vertically, while horizontal scroll works naturally
-          since everything is in the same scroll container.
+      {/* ════════════════════════════════════════════════════════
+          TIMELINE GRID
+          ════════════════════════════════════════════════════════
+          Architecture: two sibling overflow-x:auto containers.
+
+          [A] .grid-head-scroll  (overflow:hidden — no user scroll)
+                └─ .grid-head-sticky  (position:sticky on the PAGE)
+                     └─ .col-header  (Q/month labels)
+
+          [B] .grid-rows-scroll  (overflow-x:auto — user scrolls here)
+                └─ theme rows + footer
+
+          When [B] scrolls horizontally, a JS listener mirrors
+          scrollLeft into [A], keeping the header aligned.
+          Both containers have the same min-width so they always
+          match in width.
       */}
       <div className="grid-outer">
-        <div className="grid-scroll">
 
-        {/* Column header — sticky vertical, scrolls horizontally with rows */}
-        <div className="col-header" style={{minWidth:'max-content', top: colHeaderTop}}>
-          <div className="col-label-cell" style={{width:LABEL_W}}>
-            <span className="col-label-text">Strategic Theme</span>
-          </div>
-          <div className="month-grid" style={{minWidth:0,flex:1}}>
-            <div className="quarter-row">
-              {QUARTERS.map((q,qi) => (
-                <div key={q} className="quarter-cell" style={{
-                  color: qi%2===0 ? '#6366f1' : '#64748b',
-                  background: qi%2===0 ? 'rgba(99,102,241,.05)' : 'transparent'
-                }}>{q}</div>
-              ))}
-            </div>
-            <div className="month-row">
-              {MONTHS.map(m => <div key={m} className="month-cell">{m}</div>)}
-            </div>
-          </div>
-        </div>
-
-        {/* Theme rows */}
-        {filteredThemes.map(theme => {
-          const laned = packLanes(theme.items);
-          const maxLane = laned.reduce((m,p) => Math.max(m,p.lane), 0);
-          const rowH = LANE_PAD + (maxLane+1)*LANE_TOTAL + LANE_PAD + 28; // +28 for add btn
-          const color = getThemeColor(theme.name);
-          const emoji = getThemeEmoji(theme.name);
-
-          return (
-            <div key={theme.id} className="theme-row">
-              <div className="theme-label-cell" style={{width:LABEL_W, minHeight:rowH}}>
-                <div className="theme-label-inner">
-                  <div className="theme-icon-box" style={{background:color+'1a'}}>
-                    <span style={{fontSize:14}}>{emoji}</span>
-                  </div>
-                  <span className="theme-name" onClick={() => setModal({type:'theme', theme})}>{theme.name}</span>
-                  <button className="theme-edit-btn" onClick={() => setModal({type:'theme', theme})} title="Edit theme">✏️</button>
+        {/* [A] Header — sticky on the page, overflow:hidden synced by JS */}
+        <div className="grid-head-scroll" ref={headScrollRef} style={{top: stickyTop}}>
+            <div className="col-header">
+              <div className="col-label-cell" style={{width:LABEL_W}}>
+                <span className="col-label-text">Strategic Theme</span>
+              </div>
+              <div className="month-grid" style={{flex:1}}>
+                <div className="quarter-row">
+                  {QUARTERS.map((q,qi) => (
+                    <div key={q} className="quarter-cell" style={{
+                      color: qi%2===0 ? '#6366f1' : '#64748b',
+                      background: qi%2===0 ? 'rgba(99,102,241,.05)' : 'transparent'
+                    }}>{q}</div>
+                  ))}
+                </div>
+                <div className="month-row">
+                  {MONTHS.map(m => <div key={m} className="month-cell">{m}</div>)}
                 </div>
               </div>
+            </div>
+        </div>
 
-              <div className="bars-area" style={{height:rowH}}>
-                {/* Quarter tints */}
-                {[0,2].map(qi => (
-                  <div key={qi} style={{position:'absolute',inset:'0 auto 0 0',left:pct(qi*3),width:'25%',background:'rgba(99,102,241,.025)',pointerEvents:'none'}}/>
-                ))}
-                {/* Month lines */}
-                {MONTHS.map((_,i) => (
-                  <div key={i} style={{position:'absolute',top:0,bottom:0,left:pct(i+1),width:1,background:'#e2e8f0',pointerEvents:'none'}}/>
-                ))}
-                {/* Quarter dividers */}
-                {[1,2,3].map(q => (
-                  <div key={q} style={{position:'absolute',top:0,bottom:0,left:pct(q*3),width:1,background:'#cbd5e1',pointerEvents:'none'}}/>
-                ))}
+        {/* [B] Rows — user scrolls this horizontally */}
+        <div className="grid-rows-scroll" ref={rowsScrollRef}>
 
-                {laned.map((p) => {
-                  const cfg = STATUSES[p.status] || STATUSES.completed;
-                  const top = LANE_PAD + p.lane * LANE_TOTAL;
-                  return (
-                    <React.Fragment key={p.id}>
-                      {/* Ongoing dashed extension */}
-                      {p.ongoingEnd !== undefined && (
+          {/* Theme rows */}
+          {filteredThemes.map(theme => {
+            const laned = packLanes(theme.items);
+            const maxLane = laned.reduce((m,p) => Math.max(m,p.lane), 0);
+            const rowH = LANE_PAD + (maxLane+1)*LANE_TOTAL + LANE_PAD + 28;
+            const color = getThemeColor(theme.name);
+            const emoji = getThemeEmoji(theme.name);
+
+            return (
+              <div key={theme.id} className="theme-row">
+                <div className="theme-label-cell" style={{width:LABEL_W, minHeight:rowH}}>
+                  <div className="theme-label-inner">
+                    <div className="theme-icon-box" style={{background:color+'1a'}}>
+                      <span style={{fontSize:14}}>{emoji}</span>
+                    </div>
+                    <span className="theme-name" onClick={() => setModal({type:'theme', theme})}>{theme.name}</span>
+                    <button className="theme-edit-btn" onClick={() => setModal({type:'theme', theme})} title="Edit theme">✏️</button>
+                  </div>
+                </div>
+
+                <div className="bars-area" style={{height:rowH}}>
+                  {/* Quarter tints */}
+                  {[0,2].map(qi => (
+                    <div key={qi} style={{position:'absolute',top:0,bottom:0,left:pct(qi*3),width:'25%',background:'rgba(99,102,241,.025)',pointerEvents:'none'}}/>
+                  ))}
+                  {/* Month lines */}
+                  {MONTHS.map((_,i) => (
+                    <div key={i} style={{position:'absolute',top:0,bottom:0,left:pct(i+1),width:1,background:'#e2e8f0',pointerEvents:'none'}}/>
+                  ))}
+                  {/* Quarter dividers */}
+                  {[1,2,3].map(q => (
+                    <div key={q} style={{position:'absolute',top:0,bottom:0,left:pct(q*3),width:1,background:'#cbd5e1',pointerEvents:'none'}}/>
+                  ))}
+
+                  {laned.map((p) => {
+                    const cfg = STATUSES[p.status] || STATUSES.completed;
+                    const top = LANE_PAD + p.lane * LANE_TOTAL;
+                    return (
+                      <React.Fragment key={p.id}>
+                        {/* Ongoing dashed extension */}
+                        {p.ongoingEnd !== undefined && (
+                          <div
+                            className="bar bar-dashed"
+                            style={{
+                              left: pct(p.end+1), width:`calc(${pct(p.ongoingEnd-p.end)} - 4px)`,
+                              top: top+(BAR_H-26)/2, height:26,
+                              background:'#f0fdf4', border:'1.5px dashed #059669',
+                              borderRadius:'0 6px 6px 0',
+                            }}
+                            onMouseEnter={e => { setHovered({...p, name:`${p.name} — Enhancements`, desc:p.ongoingLabel, sub:`${MONTHS[p.end+1]} – ${MONTHS[p.ongoingEnd]} · Enhancements & grooming`}); setPos({x:e.clientX,y:e.clientY}); }}
+                            onMouseLeave={() => setHovered(null)}
+                            onMouseMove={e => setPos({x:e.clientX,y:e.clientY})}
+                          >
+                            <span style={{fontSize:9,fontWeight:700,fontStyle:'italic',color:'#059669',paddingLeft:6,overflow:'hidden',whiteSpace:'nowrap'}}>Enhancements & grooming</span>
+                          </div>
+                        )}
+                        {/* Main bar */}
                         <div
-                          className="bar bar-dashed"
+                          className="bar"
                           style={{
-                            left: pct(p.end+1), width:`calc(${pct(p.ongoingEnd-p.end)} - 4px)`,
-                            top: top+(BAR_H-26)/2, height:26,
-                            background:'#f0fdf4', border:'1.5px dashed #059669',
-                            borderRadius:'0 6px 6px 0',
+                            left: barL(p.start), width: barW(p.start, p.end),
+                            top, height: BAR_H,
+                            background: cfg.fill,
+                            border: `1.5px solid ${cfg.stroke}`,
+                            borderRadius: p.ongoingEnd !== undefined ? '6px 0 0 6px' : '6px',
                           }}
-                          onMouseEnter={e => { setHovered({...p, name:`${p.name} — Enhancements`, desc:p.ongoingLabel, sub:`${MONTHS[p.end+1]} – ${MONTHS[p.ongoingEnd]} · Enhancements & grooming`}); setPos({x:e.clientX,y:e.clientY}); }}
+                          onMouseEnter={e => { setHovered(p); setPos({x:e.clientX,y:e.clientY}); }}
                           onMouseLeave={() => setHovered(null)}
                           onMouseMove={e => setPos({x:e.clientX,y:e.clientY})}
+                          onClick={() => setModal({type:'item', themeId: theme.id, item: p})}
                         >
-                          <span style={{fontSize:9,fontWeight:700,fontStyle:'italic',color:'#059669',paddingLeft:6,overflow:'hidden',whiteSpace:'nowrap'}}>Enhancements & grooming</span>
+                          <div className="bar-title" style={{color:cfg.text}}>{p.name}</div>
+                          <div className="bar-date" style={{color:cfg.stroke}}>{dur(p.start,p.end)}</div>
+                          <div className="bar-actions">
+                            <button className="bar-action" title="Edit" onClick={e=>{e.stopPropagation();setModal({type:'item',themeId:theme.id,item:p})}}>✏️</button>
+                            <button className="bar-action" title="Delete" onClick={e=>{e.stopPropagation();if(confirm('Delete this item?'))deleteItem(theme.id,p.id)}}>✕</button>
+                          </div>
                         </div>
-                      )}
-                      {/* Main bar */}
-                      <div
-                        className="bar"
-                        style={{
-                          left: barL(p.start), width: barW(p.start, p.end),
-                          top, height: BAR_H,
-                          background: cfg.fill,
-                          border: `1.5px solid ${cfg.stroke}`,
-                          borderRadius: p.ongoingEnd !== undefined ? '6px 0 0 6px' : '6px',
-                        }}
-                        onMouseEnter={e => { setHovered(p); setPos({x:e.clientX,y:e.clientY}); }}
-                        onMouseLeave={() => setHovered(null)}
-                        onMouseMove={e => setPos({x:e.clientX,y:e.clientY})}
-                        onClick={() => setModal({type:'item', themeId: theme.id, item: p})}
-                      >
-                        <div className="bar-title" style={{color:cfg.text}}>{p.name}</div>
-                        <div className="bar-date" style={{color:cfg.stroke}}>{dur(p.start,p.end)}</div>
-                        <div className="bar-actions">
-                          <button className="bar-action" title="Edit" onClick={e=>{e.stopPropagation();setModal({type:'item',themeId:theme.id,item:p})}}>✏️</button>
-                          <button className="bar-action" title="Delete" onClick={e=>{e.stopPropagation();if(confirm('Delete this item?'))deleteItem(theme.id,p.id)}}>✕</button>
-                        </div>
-                      </div>
-                    </React.Fragment>
-                  );
-                })}
+                      </React.Fragment>
+                    );
+                  })}
 
-                {/* Add button at bottom */}
-                <button
-                  className="add-item-btn"
-                  style={{bottom:6}}
-                  onClick={() => setModal({type:'item', themeId: theme.id, item: null})}
-                >＋ Add item to {theme.name}</button>
+                  {/* Add button */}
+                  <button
+                    className="add-item-btn"
+                    style={{bottom:6}}
+                    onClick={() => setModal({type:'item', themeId: theme.id, item: null})}
+                  >＋ Add item to {theme.name}</button>
+                </div>
               </div>
+            );
+          })}
+
+          {/* Footer strip */}
+          <div className="footer-qstrip" style={{minWidth:'max-content'}}>
+            <div className="footer-label-pad" style={{width:LABEL_W}}>
+              <span style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',color:'#94a3b8'}}>2026</span>
             </div>
-          );
-        })}
+            <div className="footer-q-cells">
+              {QUARTERS.map((q,qi) => (
+                <div key={q} className="footer-q-cell" style={{color:qi%2===0?'#818cf8':'#94a3b8'}}>
+                  {q} · {Q_RANGES[qi]}
+                </div>
+              ))}
+            </div>
+          </div>
 
-        {/* Footer strip */}
-        <div className="footer-qstrip" style={{minWidth:'max-content'}}>
-          <div className="footer-label-pad" style={{width:LABEL_W}}>
-            <span style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',color:'#94a3b8'}}>2026</span>
-          </div>
-          <div className="footer-q-cells">
-            {QUARTERS.map((q,qi) => (
-              <div key={q} className="footer-q-cell" style={{color:qi%2===0?'#818cf8':'#94a3b8'}}>
-                {q} · {Q_RANGES[qi]}
-              </div>
-            ))}
-          </div>
-        </div>
-        </div>{/* end grid-scroll */}
-      </div>{/* end grid-outer */}
+        </div>{/* end .grid-rows-scroll */}
+      </div>{/* end .grid-outer */}
 
       {/* BOTTOM PANELS */}
       <div className="bottom-panels">
