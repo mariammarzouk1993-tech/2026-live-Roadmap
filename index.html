@@ -11,485 +11,516 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:13px}
+html,body{font-family:'Inter',sans-serif;background:#f4f5f8;color:#1e293b;font-size:13px}
 :root{
-  --navy:#1a1f4e;--indigo:#6366f1;--indigo-light:#818cf8;
-  --green:#059669;--green-bg:#d1fae5;--green-border:#059669;
-  --purple:#7c3aed;--purple-bg:#ede9fe;--purple-border:#7c3aed;
-  --orange:#f97316;--orange-bg:#ffedd5;--orange-border:#f97316;
-  --gray:#94a3b8;--gray-bg:#e2e8f0;--gray-border:#94a3b8;
+  --indigo:#6366f1;--indigo2:#4f46e5;--indigo-light:#818cf8;
+  --green:#059669;--green-bg:#d1fae5;--green-border:#86efac;
+  --purple:#7c3aed;--purple-bg:#ede9fe;--purple-border:#c4b5fd;
+  --orange:#f97316;--orange-bg:#ffedd5;--orange-border:#fdba74;
   --slate50:#f8fafc;--slate100:#f1f5f9;--slate200:#e2e8f0;
   --slate300:#cbd5e1;--slate400:#94a3b8;--slate500:#64748b;
   --slate600:#475569;--slate700:#334155;--slate800:#1e293b;--slate900:#0f172a;
-  --radius:8px;--shadow:0 1px 3px rgba(0,0,0,.08);
-  --shadow-lg:0 10px 25px rgba(0,0,0,.12),0 4px 10px rgba(0,0,0,.08);
+  --shadow:0 1px 3px rgba(0,0,0,.08);
+  --shadow-lg:0 10px 25px rgba(0,0,0,.15),0 4px 10px rgba(0,0,0,.08);
+  --LW: 190px; /* label column width */
 }
 
-/* scrollbar */
-::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--slate300);border-radius:3px}
 
-/* layout */
-#app{min-height:100vh}
-
-/* HEADER */
-.hdr{background:white;border-bottom:1px solid var(--slate200);padding:20px 32px;position:sticky;top:0;z-index:50;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.hdr-inner{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:16px}
-.hdr-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--indigo);margin-bottom:4px}
-.hdr-h1{font-size:22px;font-weight:800;color:var(--slate900);letter-spacing:-.01em}
-.hdr-sub{font-size:12px;color:var(--slate400);margin-top:4px;max-width:460px}
-.legend-strip{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
-.legend-item{display:flex;align-items:center;gap:7px;cursor:default}
-.legend-dot{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* ── PAGE CHROME (sticky) ───────────────────────────────────────── */
+.hdr{
+  background:white;border-bottom:1px solid var(--slate200);
+  padding:16px 28px;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);
+}
+.hdr-inner{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px}
+.hdr-eyebrow{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);margin-bottom:3px}
+.hdr-h1{font-size:20px;font-weight:800;color:var(--slate900);letter-spacing:-.01em}
+.hdr-sub{font-size:11px;color:var(--slate400);margin-top:3px;max-width:440px;line-height:1.5}
+.legend-strip{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.legend-item{display:flex;align-items:center;gap:6px;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .12s}
+.legend-item:hover{background:var(--slate50)}
+.legend-dot{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:900}
 .legend-label{font-size:11px;font-weight:600;color:var(--slate700)}
 .legend-count{font-size:10px;color:var(--slate400)}
 
-/* TOOLBAR */
-.toolbar{background:white;border-bottom:1px solid var(--slate200);padding:8px 32px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:sticky;top:var(--hdr-h,88px);z-index:40}
-.tb-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--slate200);background:var(--slate50);color:var(--slate700);transition:all .15s;font-family:inherit}
+.toolbar{
+  background:white;border-bottom:1px solid var(--slate200);
+  padding:7px 28px;
+  display:flex;gap:7px;align-items:center;flex-wrap:wrap;
+  position:sticky;z-index:99;
+}
+.tb-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--slate200);background:var(--slate50);color:var(--slate700);transition:all .14s;font-family:inherit}
 .tb-btn:hover{background:var(--slate100);border-color:var(--slate300)}
 .tb-btn.accent{background:var(--indigo);color:white;border-color:var(--indigo)}
-.tb-btn.accent:hover{background:#4f46e5}
-.tb-btn.success{background:#ecfdf5;color:var(--green);border-color:#a7f3d0}
-.tb-btn.success:hover{background:#d1fae5}
-.tb-sep{width:1px;height:22px;background:var(--slate200)}
-.search-wrap{flex:1;max-width:260px;position:relative}
-.search-wrap input{width:100%;padding:6px 12px 6px 30px;border:1px solid var(--slate200);border-radius:6px;font-size:12px;font-family:inherit;color:var(--slate700);background:var(--slate50);outline:none;transition:border-color .15s}
-.search-wrap input:focus{border-color:var(--indigo);background:white}
-.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--slate400);font-size:13px;pointer-events:none}
+.tb-btn.accent:hover{background:var(--indigo2)}
+.tb-btn.ok{background:#ecfdf5;color:var(--green);border-color:#a7f3d0}
+.tb-btn.ok:hover{background:var(--green-bg)}
+.tb-sep{width:1px;height:20px;background:var(--slate200);flex-shrink:0}
+.srch{position:relative;flex:1;max-width:240px}
+.srch input{width:100%;padding:5px 10px 5px 28px;border:1px solid var(--slate200);border-radius:6px;font-size:12px;font-family:inherit;color:var(--slate700);background:var(--slate50);outline:none;transition:border-color .14s}
+.srch input:focus{border-color:var(--indigo);background:white}
+.srch-ico{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--slate400);font-size:12px;pointer-events:none}
 
-/* ═══════════════════════════════════════════════════════════════
-   GRID LAYOUT — scroll-sync two-container pattern
-   ───────────────────────────────────────────────────────────────
-   WHY: position:sticky is blocked by any ancestor with overflow≠visible.
-   So the col-header CANNOT be sticky inside overflow-x:auto.
+.filter-bar{
+  background:var(--slate50);border-bottom:1px solid var(--slate200);
+  padding:6px 28px;
+  display:flex;gap:5px;align-items:center;flex-wrap:wrap;
+  position:sticky;z-index:98;
+}
+.filter-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate400);margin-right:4px}
+.ftag{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .13s;font-family:inherit;background:white;color:var(--slate600);border-color:var(--slate200)}
+.ftag:hover{border-color:var(--indigo);color:var(--indigo)}
+.ftag.on{background:var(--indigo);color:white;border-color:var(--indigo)}
 
-   SOLUTION: Two separate overflow-x:auto siblings that are kept in
-   horizontal sync via a shared scrollLeft JS listener.
-   The col-header container has overflow:hidden (user can't scroll it
-   manually) and gets its scrollLeft updated from the rows container.
-   The col-header itself is position:sticky on the PAGE (no overflow
-   ancestor), so vertical sticking works perfectly.
-   ═══════════════════════════════════════════════════════════════ */
+/* ── ROADMAP GRID ───────────────────────────────────────────────────
+   THE ONLY LAYOUT APPROACH THAT WORKS RELIABLY:
+   A real HTML <table> inside a single overflow:auto wrapper.
 
-/* Outer wrapper — white bg, shadow, no overflow */
-.grid-outer{background:white;box-shadow:var(--shadow)}
+   Why a table?
+   • <thead> <th> cells natively support `position:sticky; top:0`
+     INSIDE an overflow:auto ancestor — this is the ONE exception
+     in CSS where sticky works inside overflow.
+   • Column widths are guaranteed to match between header and body.
+   • No scroll-sync JS needed for horizontal alignment.
+   • Works in every browser, including Safari.
 
-/* Header scroll container = the sticky element itself.
-   overflow:hidden hides the scrollbar but lets JS set scrollLeft.
-   position:sticky on THIS element — it has no overflow ancestor,
-   so sticky works correctly. top is set via inline style by JS. */
-.grid-head-scroll{
-  overflow:hidden;
+   The wrapper scrolls both X and Y. The top-bar chrome (header,
+   toolbar, filter) is sticky relative to the page via its own
+   position:sticky. The table header row sticks at top:0 relative
+   to the scroll container (the wrapper div).
+─────────────────────────────────────────────────────────────────── */
+.grid-wrap{
+  overflow:auto;
   background:white;
-  border-bottom:1px solid var(--slate200);
-  position:sticky;
-  top:0; /* overridden by inline style */
-  z-index:30;
+  box-shadow:var(--shadow);
+  /* Height = viewport minus all sticky chrome above it.
+     JS will update --chrome-h once measured. */
+  max-height:calc(100vh - var(--chrome-h, 220px));
 }
 
-/* .grid-head-sticky is now unused — kept as no-op for safety */
-.grid-head-sticky{}
+.roadmap-table{
+  border-collapse:collapse;
+  table-layout:fixed;
+  width:100%;
+  min-width:1100px;
+}
 
-/* Rows scroll container — the one the user actually scrolls horizontally */
-.grid-rows-scroll{overflow-x:auto;overflow-y:visible}
+/* ── TABLE HEADER ── */
+.roadmap-table thead th{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:white;
+  font-weight:700;
+  white-space:nowrap;
+  padding:0;
+  border-bottom:2px solid var(--slate200);
+}
+/* Quarter row */
+.th-label-q{
+  width:var(--LW);
+  min-width:var(--LW);
+  max-width:var(--LW);
+  border-right:1px solid var(--slate200);
+}
+.th-q{border-right:1px solid var(--slate100)}
+.th-q:last-child{border-right:none}
+.th-q-inner{
+  padding:5px 0;
+  text-align:center;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  border-bottom:1px solid var(--slate100);
+}
+/* Month row (second header row) */
+.th-label-m{
+  width:var(--LW);
+  min-width:var(--LW);
+  max-width:var(--LW);
+  border-right:1px solid var(--slate200);
+  padding:5px 12px;
+  font-size:9px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--slate300);
+  vertical-align:bottom;
+}
+.th-month{
+  padding:5px 0;
+  text-align:center;
+  font-size:11px;
+  font-weight:500;
+  color:var(--slate400);
+  border-right:1px solid var(--slate100);
+}
+.th-month:last-child{border-right:none}
 
-/* legacy alias kept so nothing else breaks */
-.grid-wrap{background:white;box-shadow:var(--shadow);overflow-x:auto}
+/* ── TABLE BODY ── */
+.roadmap-table tbody tr{border-bottom:1px solid var(--slate100)}
+.roadmap-table tbody tr:last-child{border-bottom:none}
+.roadmap-table tbody tr:hover{background:rgba(248,250,252,.5)}
 
-/* Column header visuals */
-.col-header{display:flex;min-width:max-content}
-.col-label-cell{flex-shrink:0;border-right:1px solid var(--slate200);padding:0 16px 8px;display:flex;align-items:flex-end}
-.col-label-text{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate300)}
-.month-grid{flex:1;min-width:0}
-.quarter-row{display:flex;border-bottom:1px solid var(--slate100)}
-.quarter-cell{flex:1;text-align:center;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 0}
-.month-row{display:flex}
-.month-cell{flex:1;text-align:center;font-size:11px;color:var(--slate400);padding:5px 0;border-right:1px solid var(--slate100)}
-.month-cell:last-child{border-right:none}
+/* Label cell (frozen left column — also sticky) */
+.td-label{
+  position:sticky;
+  left:0;
+  z-index:10;
+  background:white;
+  width:var(--LW);
+  min-width:var(--LW);
+  max-width:var(--LW);
+  border-right:1px solid var(--slate100);
+  padding:0 14px;
+  vertical-align:middle;
+}
+.roadmap-table tbody tr:hover .td-label{background:rgb(248,250,252)}
+.td-label-inner{display:flex;align-items:center;gap:8px}
+.th-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.th-name{font-size:11px;font-weight:700;color:var(--slate700);flex:1;cursor:pointer;line-height:1.35}
+.th-name:hover{color:var(--indigo)}
+.td-label-edit{opacity:0;width:18px;height:18px;border-radius:4px;border:1px solid var(--slate200);background:white;color:var(--slate400);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .13s;padding:0}
+.td-label:hover .td-label-edit{opacity:1}
 
-/* THEME ROWS */
-.rows-container{min-width:max-content}
-.theme-row{display:flex;border-bottom:1px solid var(--slate100);min-width:max-content}
-.theme-row:last-child{border-bottom:none}
-.theme-row:hover{background:rgba(248,250,252,.4)}
-.theme-label-cell{flex-shrink:0;display:flex;align-items:center;padding:0 16px;border-right:1px solid var(--slate100);gap:0}
-.theme-label-inner{display:flex;align-items:center;gap:10px;width:100%}
-.theme-icon-box{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
-.theme-name{font-size:12px;font-weight:700;color:var(--slate700);flex:1;cursor:pointer}
-.theme-name:hover{color:var(--indigo)}
-.theme-edit-btn{opacity:0;width:20px;height:20px;border-radius:4px;border:1px solid var(--slate200);background:white;color:var(--slate500);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s;flex-shrink:0}
-.theme-label-cell:hover .theme-edit-btn{opacity:1}
-.bars-area{flex:1;min-width:0;position:relative}
+/* Bars cell */
+.td-bars{
+  position:relative;
+  padding:0;
+  vertical-align:top;
+}
 
-/* BARS */
-.bar{position:absolute;border-radius:6px;display:flex;flex-direction:column;justify-content:center;padding:0 10px;cursor:pointer;transition:filter .12s,transform .1s;overflow:hidden}
-.bar:hover{filter:brightness(.95);transform:translateY(-1px);z-index:5}
+/* ── BARS ── */
+.bar{
+  position:absolute;
+  border-radius:6px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:0 8px;
+  cursor:pointer;
+  overflow:hidden;
+  transition:filter .12s, box-shadow .12s;
+}
+.bar:hover{filter:brightness(.95);box-shadow:0 3px 10px rgba(0,0,0,.12);z-index:5}
 .bar-title{font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
-.bar-date{font-size:9px;font-weight:500;opacity:.8;line-height:1.2}
-.bar-dashed{border-style:dashed!important;background-image:repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(5,150,105,.08) 4px,rgba(5,150,105,.08) 8px)!important}
-.bar-actions{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:none;gap:3px}
-.bar:hover .bar-actions{display:flex}
-.bar-action{width:18px;height:18px;border-radius:3px;border:none;background:rgba(255,255,255,.85);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.15)}
-.bar-action:hover{background:white}
-.add-item-btn{position:absolute;left:50%;transform:translateX(-50%);display:none;padding:2px 8px;background:var(--indigo);color:white;border:none;border-radius:4px;font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit;z-index:3}
-.bars-area:hover .add-item-btn{display:block}
+.bar-date{font-size:9px;font-weight:500;opacity:.75;line-height:1.2}
+.bar-enh{
+  position:absolute;
+  border-radius:0 6px 6px 0;
+  display:flex;align-items:center;
+  padding:0 6px;
+  overflow:hidden;
+  background:#f0fdf4;
+  border:1.5px dashed #059669;
+  cursor:pointer;
+}
+.bar-enh-lbl{font-size:9px;font-weight:700;font-style:italic;color:#059669;white-space:nowrap;overflow:hidden}
+.bar-acts{position:absolute;right:4px;top:50%;transform:translateY(-50%);display:none;gap:2px}
+.bar:hover .bar-acts,.bar-enh:hover .bar-acts{display:flex}
+.bact{width:17px;height:17px;border-radius:3px;border:none;background:rgba(255,255,255,.88);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.bact:hover{background:white}
+.add-row-btn{
+  display:none;position:absolute;left:50%;transform:translateX(-50%);
+  padding:2px 10px;background:var(--indigo);color:white;
+  border:none;border-radius:4px;font-size:10px;font-weight:600;
+  cursor:pointer;white-space:nowrap;font-family:inherit;z-index:4;
+}
+.td-bars:hover .add-row-btn{display:block}
 
-/* FOOTER STRIP */
-.footer-qstrip{display:flex;border-top:1px solid var(--slate100);background:#fafbfc}
-.footer-label-pad{flex-shrink:0;padding:10px 16px}
-.footer-q-cells{flex:1;display:flex}
-.footer-q-cell{flex:1;text-align:center;font-size:10px;font-weight:600;padding:10px 0;color:var(--slate400)}
+/* Quarter tint overlays */
+.q-tint{position:absolute;top:0;bottom:0;pointer-events:none}
+.v-line{position:absolute;top:0;bottom:0;width:1px;pointer-events:none}
 
-/* BOTTOM PANELS */
-.bottom-panels{display:grid;grid-template-columns:repeat(3,1fr);border-top:2px solid var(--slate200);background:white;box-shadow:var(--shadow)}
-@media(max-width:900px){.bottom-panels{grid-template-columns:1fr}}
-.panel{padding:24px;border-right:1px solid var(--slate100)}
+/* ── FOOTER STRIP ── */
+.footer-strip{
+  display:flex;
+  background:var(--slate50);
+  border-top:2px solid var(--slate200);
+}
+.footer-lbl{
+  flex-shrink:0;width:var(--LW);
+  padding:10px 14px;
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate400);
+  border-right:1px solid var(--slate200);
+}
+.footer-qs{flex:1;display:flex}
+.footer-q{flex:1;text-align:center;padding:10px 0;font-size:10px;font-weight:600}
+
+/* ── BOTTOM PANELS ── */
+.panels{display:grid;grid-template-columns:repeat(3,1fr);background:white;box-shadow:var(--shadow);border-top:2px solid var(--slate200)}
+@media(max-width:860px){.panels{grid-template-columns:1fr}}
+.panel{padding:22px;border-right:1px solid var(--slate100)}
 .panel:last-child{border-right:none}
-.panel-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.panel-icon-box{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.panel-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--slate700)}
-.insight-item{display:flex;gap:10px;margin-bottom:12px}
-.insight-dot{width:6px;height:6px;border-radius:50%;background:var(--indigo-light);margin-top:5px;flex-shrink:0}
-.insight-label{font-size:11px;font-weight:600;color:var(--slate700)}
-.insight-detail{font-size:11px;color:var(--slate400);line-height:1.5;margin-top:2px}
-.split-bar{display:flex;border-radius:4px;overflow:hidden;height:20px;margin-top:12px;font-size:9px;font-weight:700}
+.panel-hdr{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.panel-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.panel-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--slate700)}
+.ins-item{display:flex;gap:9px;margin-bottom:11px}
+.ins-dot{width:6px;height:6px;border-radius:50%;background:var(--indigo-light);margin-top:5px;flex-shrink:0}
+.ins-head{font-size:11px;font-weight:600;color:var(--slate700)}
+.ins-body{font-size:11px;color:var(--slate400);line-height:1.5;margin-top:2px}
+.split-bar{display:flex;border-radius:4px;overflow:hidden;height:18px;margin-top:10px;font-size:9px;font-weight:700}
 .split-bar div{display:flex;align-items:center;justify-content:center}
-.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.kpi-card{background:var(--slate50);border-radius:8px;padding:12px;display:flex;align-items:center;gap:10px}
-.kpi-icon-box{width:32px;height:32px;border-radius:8px;background:white;box-shadow:0 1px 3px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.kpi-val{font-size:17px;font-weight:800;color:var(--slate900);line-height:1}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+.kpi-card{background:var(--slate50);border-radius:8px;padding:11px;display:flex;align-items:center;gap:9px}
+.kpi-ico{width:30px;height:30px;border-radius:7px;background:white;box-shadow:0 1px 3px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.kpi-val{font-size:16px;font-weight:800;color:var(--slate900);line-height:1}
 .kpi-lbl{font-size:10px;color:var(--slate400);margin-top:2px;line-height:1.3}
-.tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--slate100);color:var(--slate600);border:1px solid var(--slate200);display:inline-block;margin:2px}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--slate100);color:var(--slate600);border:1px solid var(--slate200);display:inline-block;margin:2px}
 
-/* FIXED LEGEND BOX */
-.legend-box{position:fixed;bottom:20px;left:24px;background:white;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--slate200);padding:14px 16px;z-index:40}
-.legend-box-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate300);margin-bottom:8px}
-.legend-box-item{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-.legend-box-item:last-child{margin-bottom:0}
-.legend-swatch{width:16px;height:16px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px}
+/* ── FIXED LEGEND BOX ── */
+.leg-box{position:fixed;bottom:18px;left:20px;background:white;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--slate200);padding:12px 14px;z-index:80}
+.leg-box-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--slate300);margin-bottom:7px}
+.leg-row{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.leg-row:last-child{margin-bottom:0}
+.leg-sw{width:15px;height:15px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;font-weight:900}
 
-/* TOOLTIP */
-.tooltip{position:fixed;z-index:100;background:white;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--slate200);padding:16px;width:300px;pointer-events:none}
-.tooltip-title{font-size:13px;font-weight:700;color:var(--slate900);margin-bottom:8px;line-height:1.35}
-.tooltip-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-bottom:6px}
-.tooltip-sub{font-size:11px;font-weight:500;color:var(--slate500);margin-bottom:8px}
-.tooltip-desc{font-size:11px;color:var(--slate600);line-height:1.6;border-top:1px solid var(--slate100);padding-top:8px;margin-top:4px}
+/* ── TOOLTIP ── */
+.tip{position:fixed;z-index:200;background:white;border-radius:12px;box-shadow:var(--shadow-lg);border:1px solid var(--slate200);padding:14px;width:290px;pointer-events:none}
+.tip-title{font-size:13px;font-weight:700;color:var(--slate900);margin-bottom:7px;line-height:1.35}
+.tip-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.tip-sub{font-size:11px;font-weight:500;color:var(--slate500);margin-bottom:7px}
+.tip-desc{font-size:11px;color:var(--slate600);line-height:1.6;border-top:1px solid var(--slate100);padding-top:7px;margin-top:3px}
 
-/* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:white;border-radius:16px;width:500px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,.25)}
-.modal-hdr{padding:20px 24px 16px;border-bottom:1px solid var(--slate100);display:flex;justify-content:space-between;align-items:center}
-.modal-hdr h3{font-size:16px;font-weight:700;color:var(--slate900)}
-.modal-close{width:28px;height:28px;border-radius:6px;border:1px solid var(--slate200);background:var(--slate50);color:var(--slate600);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.modal-body{padding:20px 24px}
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--slate400);margin-bottom:5px}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:9px 12px;border:1px solid var(--slate200);border-radius:8px;font-size:13px;font-family:inherit;color:var(--slate800);outline:none;transition:border-color .15s;background:white}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--indigo)}
-.form-group textarea{resize:vertical;min-height:72px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.modal-footer{padding:14px 24px;border-top:1px solid var(--slate100);display:flex;gap:8px;justify-content:flex-end}
-.m-btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
-.m-btn.cancel{background:var(--slate100);color:var(--slate700)}
-.m-btn.cancel:hover{background:var(--slate200)}
-.m-btn.save{background:var(--indigo);color:white}
-.m-btn.save:hover{background:#4f46e5}
-.m-btn.danger{background:#fef2f2;color:#ef4444;border:1px solid #fecaca}
-.m-btn.danger:hover{background:#fee2e2}
-
-/* FILTER TAGS */
-.filter-tags{padding:8px 32px;background:var(--slate50);border-bottom:1px solid var(--slate200);display:flex;gap:6px;flex-wrap:wrap;align-items:center;position:sticky;top:var(--hdr-toolbar-h,130px);z-index:39}
-.filter-tag{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s}
-.filter-tag.active{background:var(--indigo);color:white;border-color:var(--indigo)}
-.filter-tag:not(.active){background:white;color:var(--slate600);border-color:var(--slate200)}
-.filter-tag:not(.active):hover{border-color:var(--indigo);color:var(--indigo)}
-.filter-sep{font-size:10px;color:var(--slate300);padding:0 2px}
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:white;border-radius:16px;width:480px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,.22)}
+.modal-hdr{padding:18px 22px 14px;border-bottom:1px solid var(--slate100);display:flex;justify-content:space-between;align-items:center}
+.modal-hdr h3{font-size:15px;font-weight:700;color:var(--slate900)}
+.modal-x{width:26px;height:26px;border-radius:6px;border:1px solid var(--slate200);background:var(--slate50);color:var(--slate600);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.modal-body{padding:18px 22px}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--slate400);margin-bottom:4px}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 11px;border:1px solid var(--slate200);border-radius:7px;font-size:13px;font-family:inherit;color:var(--slate800);outline:none;transition:border-color .14s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--indigo)}
+.fg textarea{resize:vertical;min-height:66px}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.modal-ftr{padding:12px 22px;border-top:1px solid var(--slate100);display:flex;gap:7px;justify-content:flex-end}
+.mbtn{padding:7px 18px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .13s}
+.mbtn.cancel{background:var(--slate100);color:var(--slate700)}
+.mbtn.cancel:hover{background:var(--slate200)}
+.mbtn.save{background:var(--indigo);color:white}
+.mbtn.save:hover{background:var(--indigo2)}
+.mbtn.del{background:#fef2f2;color:#ef4444;border:1px solid #fecaca}
+.mbtn.del:hover{background:#fee2e2}
 
 @media print{
-  .toolbar,.filter-tags,.legend-box,.hdr .legend-strip,.theme-edit-btn,.bar-actions,.add-item-btn,.tb-btn{display:none!important}
-  .hdr{position:relative!important;top:auto!important}
-  .col-header{position:relative!important;top:auto!important}
-  body{background:white}
+  .toolbar,.filter-bar,.leg-box,.hdr .legend-strip,.td-label-edit,.bar-acts,.add-row-btn{display:none!important}
+  .hdr{position:relative!important}
+  .grid-wrap{max-height:none!important;overflow:visible!important}
 }
 </style>
 </head>
 <body>
-<div id="app"></div>
+<div id="root"></div>
+
 <script type="text/babel">
-const { useState, useRef, useCallback, useEffect, useMemo } = React;
+const { useState, useRef, useEffect, useMemo } = React;
 
 /* ── CONSTANTS ─────────────────────────────────────────────────── */
-const LABEL_W = 200;
-const BAR_H   = 36;
-const LANE_PAD = 10;
-const LANE_GAP = 6;
-const LANE_TOTAL = BAR_H + LANE_GAP;
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const QUARTERS = ["Q1","Q2","Q3","Q4"];
-const Q_RANGES = ["Jan – Mar","Apr – Jun","Jul – Sep","Oct – Dec"];
+const LW      = 190;   // label column px width (matches --LW)
+const BAR_H   = 34;
+const PAD     = 9;
+const GAP     = 5;
+const LANE    = BAR_H + GAP;
+const MONTHS  = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const QUARTERS= ["Q1","Q2","Q3","Q4"];
+const Q_RANGE = ["Jan – Mar","Apr – Jun","Jul – Sep","Oct – Dec"];
+
+// Position helpers — all as % of the 12-column bars area
 const pct  = n => `${(n/12)*100}%`;
 const barL = s => `calc(${pct(s)} + 3px)`;
 const barW = (s,e) => `calc(${pct(e-s+1)} - 6px)`;
-const dur  = (s,e) => s===e ? MONTHS[s] : `${MONTHS[s]} – ${MONTHS[e]}`;
+const label= (s,e) => s===e ? MONTHS[s] : `${MONTHS[s]} – ${MONTHS[e]}`;
 
-const STATUSES = {
-  completed:       { fill:"#d1fae5", stroke:"#059669", text:"#065f46", label:"Completed",               icon:"✓" },
-  "in-review":     { fill:"#ede9fe", stroke:"#7c3aed", text:"#5b21b6", label:"In Review",               icon:"◐" },
-  "in-progress":   { fill:"#ffedd5", stroke:"#f97316", text:"#9a3412", label:"In Progress",             icon:"●" },
-  "to-be-defined": { fill:"#e2e8f0", stroke:"#94a3b8", text:"#475569", label:"To Be Defined",           icon:"?" },
+const STATUS = {
+  completed:       {fill:"#d1fae5",stroke:"#059669",text:"#065f46",label:"Completed",      icon:"✓"},
+  "in-review":     {fill:"#ede9fe",stroke:"#7c3aed",text:"#5b21b6",label:"In Review",      icon:"◐"},
+  "in-progress":   {fill:"#ffedd5",stroke:"#f97316",text:"#9a3412",label:"In Progress",    icon:"●"},
+  "to-be-defined": {fill:"#e2e8f0",stroke:"#94a3b8",text:"#475569",label:"To Be Defined",  icon:"?"},
 };
 
-const THEME_ICONS = {
-  "Florist App":             { emoji:"📱", color:"#f59e0b" },
-  "OMS & Operations":        { emoji:"🔄", color:"#3b82f6" },
-  "Customer Service":        { emoji:"🎧", color:"#10b981" },
-  "Inventory & WMS":         { emoji:"📦", color:"#14b8a6" },
-  "Intelligence & AI":       { emoji:"⚡", color:"#6366f1" },
-  "Design System & Research":{ emoji:"🎨", color:"#8b5cf6" },
+const TICONS = {
+  "Florist App":             {emoji:"📱",color:"#f59e0b"},
+  "OMS & Operations":        {emoji:"🔄",color:"#3b82f6"},
+  "Customer Service":        {emoji:"🎧",color:"#10b981"},
+  "Inventory & WMS":         {emoji:"📦",color:"#14b8a6"},
+  "Intelligence & AI":       {emoji:"⚡",color:"#6366f1"},
+  "Design System & Research":{emoji:"🎨",color:"#8b5cf6"},
 };
+const tColor = n => TICONS[n]?.color || "#6366f1";
+const tEmoji = n => TICONS[n]?.emoji || "📌";
 
-function getThemeColor(name) {
-  return THEME_ICONS[name]?.color || "#6366f1";
-}
-function getThemeEmoji(name) {
-  return THEME_ICONS[name]?.emoji || "📌";
-}
-
-/* ── INITIAL DATA ──────────────────────────────────────────────── */
-const INIT_THEMES = [
-  {
-    id:"florist", name:"Florist App",
-    items:[
-      { id:"f1", name:"A6 Card Enhancements", start:0, end:0, status:"completed", sub:"Dec 29 – Jan 11 · Design Handoff", desc:"A6 card enhancements and adding service-type filter inside the florist app." },
-      { id:"f2", name:"Add Bag — Small Task", start:0, end:0, status:"completed", sub:"Jan · Quick Help", desc:"Small design support task — Add Bag feature for the florist app." },
-      { id:"f3", name:"3 Small Florist App Tickets", start:1, end:1, status:"completed", sub:"Feb 16 · 1 day", desc:"Three small UI improvement tickets for the florist app, resolved in a single design session." },
-      { id:"f4", name:"Show Product Tier Tagging", start:6, end:6, status:"in-review", sub:"Q3 · Jul · Small Task", desc:"Surface product tier tags inside the florist app so florists can see product quality tiers at a glance." },
-      { id:"f5", name:"Guideline & Technique Video Link per SKU", start:6, end:6, status:"in-review", sub:"Q3 · Jul · Small Task", desc:"Attach a guideline/technique video link to every SKU in the florist app so florists can reference arrangement instructions inline." },
-    ],
-  },
-  {
-    id:"oms", name:"OMS & Operations",
-    items:[
-      { id:"o1", name:"Hub Changes — Express Delivery", start:0, end:1, status:"completed", sub:"Jan – Feb · Design Handoff", desc:"Hub-level UX changes to support express delivery order flows — surfacing time-critical orders and routing logic for ops agents." },
-      { id:"o2", name:"Change Time Slots", start:0, end:0, status:"completed", sub:"Jan 27 – Feb 2 · Design Handoff", desc:"Jira CHAR-5441 — UI for agents to change delivery time slots on live orders." },
-      { id:"o3", name:"Production System 2.0 — Enhancements", start:1, end:2, status:"completed", sub:"Feb – Mar · Design Handoff", desc:"Enhancements to the production operations system — operation ticket improvements and workflow updates." },
-      { id:"o4", name:"Sherlock OMS Agent — Slice 1", start:2, end:3, status:"completed", ongoingEnd:6, ongoingLabel:"Post-handoff enhancements — PMs continued requesting UI tweaks, grooming changes, and Slice 1 updates throughout May–Jun alongside dev build.", sub:"Mar 2 – Apr 16 · PRD & Full Design", desc:"Sherlock is the AI-powered OMS agent system. Slice 1 covers the core agent interface — order lookup, AI-assisted triage, and action recommendations. Delivered across Ramadan, Eid, and public holidays." },
-      { id:"o5", name:"Dynamic Address Validation Engine", start:4, end:4, status:"completed", sub:"May 10 – 13 · Design Handoff", desc:"Jira CHAR-6416 — UI for the dynamic address scoring and validation engine." },
-      { id:"o6", name:"Sherlock OMS Agent — Slice 2", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · Pending Grooming", desc:"Slice 2 scope to be finalised after grooming. UI changes expected based on Slice 1 learnings." },
-    ],
-  },
-  {
-    id:"cs", name:"Customer Service",
-    items:[
-      { id:"c1", name:"CS Dashboard", start:0, end:1, status:"completed", ongoingEnd:3, ongoingLabel:"Continued small refinements in Mar–Apr based on dev feedback and QA rounds during build.", sub:"Jan 18 – Feb 14 · Design Handoff", desc:"AI address scoring and CS dashboard — giving CS agents a unified view of address quality signals and order flags." },
-      { id:"c2", name:"Ticketing CS-OPS — Phase 1", start:4, end:4, status:"completed", sub:"May 10 – 20 · Design Handoff", desc:"Hub ticketing system revamp — Phase 1. Redesigned ticketing interface for CS and Ops agents." },
-      { id:"c3", name:"Ticketing CS-OPS — Phase 2", start:5, end:5, status:"completed", sub:"Jun 16 – 23 · Design Handoff", desc:"Phase 2 of the ticketing system revamp — extended categories and agent assignment flows." },
-      { id:"c4", name:"Link OMS Orders with Assigned Tickets", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · Interviews & Designs", desc:"Connect OMS order detail pages to their tickets — display per-order ticket flags with color-coded status." },
-      { id:"c5", name:"Customer Segmentation & Decision Tool", start:7, end:8, status:"in-review", sub:"Q3 · Aug – Sep · Interviews & Designs", desc:"Customer intelligence layer inside FlowardHub. Agents look up a customer by phone and receive a behavior profile, risk score, and real-time action recommendation." },
-      { id:"c6", name:"Order 360 — Full Interaction View & AI Summary", start:9, end:10, status:"to-be-defined", sub:"Q4 · Oct – Nov · Interviews & Designs", desc:"Unified timeline of full order interaction history across Sawt, Genesys, and Infobip." },
-      { id:"c7", name:"Ticketing System — SLA & Priority Tracking", start:9, end:10, status:"to-be-defined", sub:"Q4 · Oct – Nov · Interviews & Designs", desc:"Manager-configurable SLAs by ticket category/sub-category. Auto-tracks resolution SLA per ticket, flags breaches in real time." },
-      { id:"c8", name:"Ticketing System — Manager Reports View", start:10, end:11, status:"to-be-defined", sub:"Q4 · Nov – Dec · Interviews & Design Review", desc:"CS/Ops manager dashboard tracking team efficiency, ticket volumes, resolution times, and agent workload." },
-    ],
-  },
-  {
-    id:"wms", name:"Inventory & WMS",
-    items:[
-      { id:"w1", name:"Centralized Management of Item Stock Categories", start:1, end:1, status:"completed", sub:"Feb 1 – 2 · Design Handoff", desc:"Jira CHAR-5442 — UI for centralized control over item stock category assignments across the WMS." },
-      { id:"w2", name:"Daily Cycle Count — WMS Web & Mobile", start:1, end:1, status:"completed", sub:"Feb 12 – 19 · Design Handoff", desc:"Full daily cycle count module for WMS — web and mobile interfaces. Covers count workflow, discrepancy flagging, and supervisor review." },
-      { id:"w3", name:"Dynamic Inventory Transaction Reason Management", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · Spillover from Q2 · PRD", desc:"Enables warehouse managers to dynamically configure and manage transaction reason codes across inventory movements." },
-    ],
-  },
-  {
-    id:"ai", name:"Intelligence & AI",
-    items:[
-      { id:"a1", name:"Priority Engine — Project Optima", start:5, end:5, status:"completed", sub:"Jun 11 – 15 · Design Handoff", desc:"Project Optima — the Priority Engine for order and task prioritisation. Full design delivered in 3 days." },
-      { id:"a2", name:"Priority Engine — PRD Phase", start:6, end:7, status:"in-review", sub:"Q3 · Jul – Aug · PRD", desc:"PRD and design iteration for the priority engine — expanding scoring model logic, configuration UI, and integration with the OMS agent layer." },
-      { id:"a3", name:"AI QC Scoring Model — Florist App Integration", start:7, end:8, status:"in-review", sub:"Q3 · Aug – Sep · PRD", desc:"AI-powered quality control scoring model integrated into the florist app — automatically scoring bouquet and arrangement photos against quality benchmarks." },
-    ],
-  },
-  {
-    id:"ds", name:"Design System & Research",
-    items:[
-      { id:"d1", name:"Website Flow Audit", start:0, end:0, status:"completed", sub:"Jan · Small Task", desc:"Full UX audit of the consumer website flow — mapping user journeys, identifying friction points, and documenting findings for the product team." },
-      { id:"d2", name:"Workflow of Delivery App — Presentation", start:0, end:1, status:"completed", sub:"Jan – Feb · Research & Presentation", desc:"End-to-end workflow documentation and presentation of the delivery app." },
-      { id:"d3", name:"Design System for Operations", start:3, end:3, status:"completed", ongoingEnd:8, ongoingLabel:"Ongoing — new components, token updates, and design system maintenance as each product team adopts it and requests additions throughout the year.", sub:"Apr 14 – 24 · Design System", desc:"Built and published the operations design system — shared component library, token set, and documentation for all ops-facing products." },
-    ],
-  },
+/* ── DATA ─────────────────────────────────────────────────────── */
+const INIT = [
+  {id:"florist",name:"Florist App",items:[
+    {id:"f1",name:"A6 Card Enhancements",start:0,end:0,status:"completed",sub:"Dec 29 – Jan 11 · Design Handoff",desc:"A6 card enhancements and adding service-type filter inside the florist app."},
+    {id:"f2",name:"Add Bag — Small Task",start:0,end:0,status:"completed",sub:"Jan · Quick Help",desc:"Small design support task — Add Bag feature for the florist app."},
+    {id:"f3",name:"3 Small Florist App Tickets",start:1,end:1,status:"completed",sub:"Feb 16 · 1 day",desc:"Three small UI improvement tickets for the florist app."},
+    {id:"f4",name:"Show Product Tier Tagging",start:6,end:6,status:"in-review",sub:"Q3 · Jul",desc:"Surface product tier tags inside the florist app."},
+    {id:"f5",name:"Guideline & Technique Video Link per SKU",start:6,end:6,status:"in-review",sub:"Q3 · Jul",desc:"Attach a guideline/technique video link to every SKU."},
+  ]},
+  {id:"oms",name:"OMS & Operations",items:[
+    {id:"o1",name:"Hub Changes — Express Delivery",start:0,end:1,status:"completed",sub:"Jan – Feb · Design Handoff",desc:"Hub-level UX changes to support express delivery order flows."},
+    {id:"o2",name:"Change Time Slots",start:0,end:0,status:"completed",sub:"Jan 27 – Feb 2",desc:"UI for agents to change delivery time slots on live orders."},
+    {id:"o3",name:"Production System 2.0 Enhancements",start:1,end:2,status:"completed",sub:"Feb – Mar",desc:"Enhancements to the production operations system."},
+    {id:"o4",name:"Sherlock OMS Agent — Slice 1",start:2,end:3,status:"completed",ongoingEnd:5,ongoingLabel:"Post-handoff enhancements — PMs continued requesting UI tweaks and Slice 1 updates throughout May–Jun.",sub:"Mar 2 – Apr 16 · PRD & Full Design",desc:"Sherlock is the AI-powered OMS agent system. Slice 1 covers the core agent interface."},
+    {id:"o5",name:"Dynamic Address Validation Engine",start:4,end:4,status:"completed",sub:"May 10 – 13",desc:"UI for the dynamic address scoring and validation engine."},
+    {id:"o6",name:"Sherlock OMS Agent — Slice 2",start:6,end:7,status:"in-review",sub:"Q3 · Jul – Aug",desc:"Slice 2 scope to be finalised after grooming."},
+  ]},
+  {id:"cs",name:"Customer Service",items:[
+    {id:"c1",name:"CS Dashboard",start:0,end:1,status:"completed",ongoingEnd:3,ongoingLabel:"Continued small refinements in Mar–Apr based on dev feedback.",sub:"Jan 18 – Feb 14",desc:"AI address scoring and CS dashboard."},
+    {id:"c2",name:"Ticketing CS-OPS — Phase 1",start:4,end:4,status:"completed",sub:"May 10 – 20",desc:"Hub ticketing system revamp — Phase 1."},
+    {id:"c3",name:"Ticketing CS-OPS — Phase 2",start:5,end:5,status:"completed",sub:"Jun 16 – 23",desc:"Phase 2 of the ticketing system revamp."},
+    {id:"c4",name:"Link OMS Orders with Assigned Tickets",start:6,end:7,status:"in-review",sub:"Q3 · Jul – Aug",desc:"Connect OMS order detail pages to their tickets."},
+    {id:"c5",name:"Customer Segmentation & Decision Tool",start:7,end:8,status:"in-review",sub:"Q3 · Aug – Sep",desc:"Customer intelligence layer inside FlowardHub."},
+    {id:"c6",name:"Order 360 — Full Interaction View",start:9,end:10,status:"to-be-defined",sub:"Q4 · Oct – Nov",desc:"Unified timeline of full order interaction history."},
+    {id:"c7",name:"Ticketing System — SLA & Priority Tracking",start:9,end:10,status:"to-be-defined",sub:"Q4 · Oct – Nov",desc:"Manager-configurable SLAs by ticket category."},
+    {id:"c8",name:"Ticketing System — Manager Reports View",start:10,end:11,status:"to-be-defined",sub:"Q4 · Nov – Dec",desc:"CS/Ops manager dashboard tracking team efficiency."},
+  ]},
+  {id:"wms",name:"Inventory & WMS",items:[
+    {id:"w1",name:"Centralized Management of Stock Categories",start:1,end:1,status:"completed",sub:"Feb 1 – 2",desc:"UI for centralized control over item stock category assignments."},
+    {id:"w2",name:"Daily Cycle Count — WMS Web & Mobile",start:1,end:1,status:"completed",sub:"Feb 12 – 19",desc:"Full daily cycle count module for WMS."},
+    {id:"w3",name:"Dynamic Inventory Transaction Reason Management",start:6,end:7,status:"in-review",sub:"Q3 · Jul – Aug",desc:"Enables warehouse managers to dynamically configure transaction reason codes."},
+  ]},
+  {id:"ai",name:"Intelligence & AI",items:[
+    {id:"a1",name:"Priority Engine — Project Optima",start:5,end:5,status:"completed",sub:"Jun 11 – 15",desc:"Project Optima — the Priority Engine for order prioritisation. Delivered in 3 days."},
+    {id:"a2",name:"Priority Engine — PRD Phase",start:6,end:7,status:"in-review",sub:"Q3 · Jul – Aug",desc:"PRD and design iteration for the priority engine."},
+    {id:"a3",name:"AI QC Scoring Model — Florist App",start:7,end:8,status:"in-review",sub:"Q3 · Aug – Sep",desc:"AI-powered quality control scoring model integrated into the florist app."},
+  ]},
+  {id:"ds",name:"Design System & Research",items:[
+    {id:"d1",name:"Website Flow Audit",start:0,end:0,status:"completed",sub:"Jan · Small Task",desc:"Full UX audit of the consumer website flow."},
+    {id:"d2",name:"Workflow of Delivery App — Presentation",start:0,end:1,status:"completed",sub:"Jan – Feb",desc:"End-to-end workflow documentation and presentation of the delivery app."},
+    {id:"d3",name:"Design System for Operations",start:3,end:3,status:"completed",ongoingEnd:8,ongoingLabel:"Ongoing — new components, token updates, and design system maintenance throughout the year.",sub:"Apr 14 – 24 · Design System",desc:"Built and published the operations design system."},
+  ]},
 ];
 
 /* ── LANE PACKING ──────────────────────────────────────────────── */
-function packLanes(items) {
-  const laneEnd = [];
-  return items.map(p => {
-    const effectiveEnd = p.ongoingEnd ?? p.end;
-    let l = 0;
-    while (laneEnd[l] !== undefined && laneEnd[l] >= p.start) l++;
-    laneEnd[l] = effectiveEnd;
-    return { ...p, lane: l };
+function packLanes(items){
+  const laneEnd=[];
+  return items.map(p=>{
+    const eff=p.ongoingEnd??p.end;
+    let l=0;
+    while(laneEnd[l]!==undefined&&laneEnd[l]>=p.start)l++;
+    laneEnd[l]=eff;
+    return{...p,lane:l};
   });
 }
 
-/* ── ID GEN ────────────────────────────────────────────────────── */
-let _idctr = 1000;
-const genId = () => 'id' + (++_idctr);
+let _id=1000;
+const gid=()=>'id'+(++_id);
 
-/* ─────────────────────────────────────────────────────────────── */
-/*  MAIN APP                                                        */
-/* ─────────────────────────────────────────────────────────────── */
-function App() {
-  const [themes, setThemes] = useState(INIT_THEMES);
-  const [hovered, setHovered] = useState(null);
-  const [pos, setPos] = useState({x:0,y:0});
-  const [modal, setModal] = useState(null); // {type:'item'|'theme', ...}
-  const [search, setSearch] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [darkMode, setDarkMode] = useState(false);
-  const [stickyTop, setStickyTop] = useState(0); // px offset for sticky col-header
+/* ══════════════════════════════════════════════════════════════════
+   APP
+══════════════════════════════════════════════════════════════════ */
+function App(){
+  const [themes,setThemes]=useState(INIT);
+  const [tip,setTip]=useState(null);
+  const [tipPos,setTipPos]=useState({x:0,y:0});
+  const [modal,setModal]=useState(null);
+  const [search,setSearch]=useState('');
+  const [fStatus,setFStatus]=useState('all');
+  const [dark,setDark]=useState(false);
 
-  /* Refs for the three sticky bars above the grid */
-  const hdrRef     = useRef(null);
-  const toolbarRef = useRef(null);
-  const filterRef  = useRef(null);
+  // Refs for the three sticky chrome bars — used to set --chrome-h
+  const hdrRef=useRef(null);
+  const tbRef=useRef(null);
+  const fbRef=useRef(null);
 
-  /* Refs for the two scroll-sync containers */
-  const rowsScrollRef = useRef(null); // the one the user scrolls (rows)
-  const headScrollRef = useRef(null); // header mirror (overflow:hidden, driven by JS)
-
-  /* ── Measure sticky offset + set up horizontal scroll sync ── */
-  useEffect(() => {
-    /* 1. Measure the total height of all sticky bars above the grid
-          so the col-header sticks at exactly that offset on page scroll */
-    function measureTop() {
-      const h1 = hdrRef.current?.offsetHeight     || 0;
-      const h2 = toolbarRef.current?.offsetHeight || 0;
-      const h3 = filterRef.current?.offsetHeight  || 0;
-      setStickyTop(h1 + h2 + h3);
-      /* Also keep CSS vars updated for .toolbar and .filter-tags sticky tops */
-      document.documentElement.style.setProperty('--hdr-h',         `${h1}px`);
-      document.documentElement.style.setProperty('--hdr-toolbar-h', `${h1 + h2}px`);
+  useEffect(()=>{
+    function measure(){
+      const h=(hdrRef.current?.offsetHeight||0)+(tbRef.current?.offsetHeight||0)+(fbRef.current?.offsetHeight||0);
+      document.documentElement.style.setProperty('--chrome-h',`${h}px`);
+      // Also set sticky tops for toolbar and filter bar
+      const h1=hdrRef.current?.offsetHeight||0;
+      const h2=tbRef.current?.offsetHeight||0;
+      document.documentElement.style.setProperty('--tb-top',`${h1}px`);
+      document.documentElement.style.setProperty('--fb-top',`${h1+h2}px`);
     }
+    const t=setTimeout(measure,0);
+    window.addEventListener('resize',measure);
+    return()=>{clearTimeout(t);window.removeEventListener('resize',measure)};
+  },[]);
 
-    /* 2. Sync header horizontal scroll from rows scroll */
-    function syncHead() {
-      if (headScrollRef.current && rowsScrollRef.current) {
-        headScrollRef.current.scrollLeft = rowsScrollRef.current.scrollLeft;
+  const allItems=useMemo(()=>themes.flatMap(t=>t.items),[themes]);
+  const countBy=s=>allItems.filter(i=>i.status===s).length;
+
+  const filtered=useMemo(()=>themes.map(t=>({
+    ...t,
+    items:t.items.filter(it=>{
+      const ms=!search||it.name.toLowerCase().includes(search.toLowerCase());
+      const mf=fStatus==='all'||it.status===fStatus;
+      return ms&&mf;
+    })
+  })),[themes,search,fStatus]);
+
+  /* CRUD */
+  const saveItem=(tid,item,fromTid)=>{
+    setThemes(prev=>{
+      let next=prev;
+      if(fromTid&&fromTid!==tid){
+        next=next.map(t=>t.id===fromTid?{...t,items:t.items.filter(i=>i.id!==item.id)}:t);
       }
-    }
-
-    const rowsEl = rowsScrollRef.current;
-    if (rowsEl) rowsEl.addEventListener('scroll', syncHead, { passive: true });
-
-    const t = setTimeout(measureTop, 0);
-    window.addEventListener('resize', measureTop);
-
-    return () => {
-      clearTimeout(t);
-      window.removeEventListener('resize', measureTop);
-      if (rowsEl) rowsEl.removeEventListener('scroll', syncHead);
-    };
-  }, []);
-
-  /* derived counts */
-  const allItems = useMemo(() => themes.flatMap(t => t.items), [themes]);
-  const countBy = s => allItems.filter(i => i.status === s).length;
-
-  /* search/filter */
-  const filteredThemes = useMemo(() => {
-    return themes.map(t => ({
-      ...t,
-      items: t.items.filter(it => {
-        const matchSearch = !search || it.name.toLowerCase().includes(search.toLowerCase());
-        const matchStatus = filterStatus === 'all' || it.status === filterStatus;
-        return matchSearch && matchStatus;
-      })
-    }));
-  }, [themes, search, filterStatus]);
-
-  /* ── CRUD ── */
-  const saveItem = (themeId, item) => {
-    setThemes(prev => prev.map(t => {
-      if (t.id !== themeId) return t;
-      const exists = t.items.find(i => i.id === item.id);
-      if (exists) return { ...t, items: t.items.map(i => i.id === item.id ? item : i) };
-      return { ...t, items: [...t.items, item] };
-    }));
-    setModal(null);
-  };
-
-  const deleteItem = (themeId, itemId) => {
-    setThemes(prev => prev.map(t =>
-      t.id !== themeId ? t : { ...t, items: t.items.filter(i => i.id !== itemId) }
-    ));
-    setModal(null);
-  };
-
-  const saveTheme = (theme) => {
-    setThemes(prev => {
-      const exists = prev.find(t => t.id === theme.id);
-      if (exists) return prev.map(t => t.id === theme.id ? { ...t, name: theme.name } : t);
-      return [...prev, { ...theme, items: [] }];
+      next=next.map(t=>{
+        if(t.id!==tid)return t;
+        const ex=t.items.find(i=>i.id===item.id);
+        if(ex)return{...t,items:t.items.map(i=>i.id===item.id?item:i)};
+        return{...t,items:[...t.items,item]};
+      });
+      return next;
     });
     setModal(null);
   };
-
-  const deleteTheme = (themeId) => {
-    if (!confirm('Delete this entire theme and all its items?')) return;
-    setThemes(prev => prev.filter(t => t.id !== themeId));
+  const delItem=(tid,iid)=>{
+    setThemes(prev=>prev.map(t=>t.id!==tid?t:{...t,items:t.items.filter(i=>i.id!==iid)}));
+    setModal(null);
+  };
+  const saveTheme=th=>{
+    setThemes(prev=>{
+      if(prev.find(t=>t.id===th.id))return prev.map(t=>t.id===th.id?{...t,name:th.name}:t);
+      return[...prev,{...th,items:[]}];
+    });
+    setModal(null);
+  };
+  const delTheme=tid=>{
+    if(!confirm('Delete this theme and all its items?'))return;
+    setThemes(prev=>prev.filter(t=>t.id!==tid));
     setModal(null);
   };
 
-  const moveItem = (fromThemeId, toThemeId, item) => {
-    setThemes(prev => prev.map(t => {
-      if (t.id === fromThemeId) return { ...t, items: t.items.filter(i => i.id !== item.id) };
-      if (t.id === toThemeId)   return { ...t, items: [...t.items, item] };
-      return t;
-    }));
+  const expJSON=()=>{
+    const b=new Blob([JSON.stringify(themes,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='roadmap-2026.json';a.click();
+  };
+  const impJSON=()=>{
+    const inp=document.createElement('input');inp.type='file';inp.accept='.json';
+    inp.onchange=e=>{const r=new FileReader();r.onload=ev=>{try{setThemes(JSON.parse(ev.target.result))}catch{alert('Invalid JSON')}};r.readAsText(e.target.files[0])};
+    inp.click();
   };
 
-  /* ── EXPORT ── */
-  const exportJSON = () => {
-    const blob = new Blob([JSON.stringify(themes, null, 2)], { type:'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'roadmap-2026.json';
-    a.click();
-  };
+  return(
+    <div style={dark?{filter:'invert(1) hue-rotate(180deg)'}:{}}>
 
-  const importJSON = () => {
-    const input = document.createElement('input');
-    input.type = 'file'; input.accept = '.json';
-    input.onchange = e => {
-      const r = new FileReader();
-      r.onload = ev => { try { setThemes(JSON.parse(ev.target.result)); } catch { alert('Invalid JSON'); } };
-      r.readAsText(e.target.files[0]);
-    };
-    input.click();
-  };
-
-  const printPage = () => window.print();
-
-  /* ── RENDER ── */
-  return (
-    <div id="app-root" style={darkMode ? {filter:'invert(1) hue-rotate(180deg)'} : {}}>
-      {/* HEADER */}
+      {/* ── HEADER ── */}
       <header className="hdr" ref={hdrRef}>
         <div className="hdr-inner">
           <div>
-            <div className="hdr-title">Floward Product Design</div>
+            <div className="hdr-eyebrow">Floward Product Design</div>
             <h1 className="hdr-h1">2026 UX Design Roadmap</h1>
             <p className="hdr-sub">Delivering operational excellence through intelligent systems, seamless experiences, and scalable design foundations.</p>
           </div>
           <div className="legend-strip">
-            {Object.entries(STATUSES).map(([key, cfg]) => (
-              <div key={key} className="legend-item" onClick={() => setFilterStatus(filterStatus===key?'all':key)}>
-                <div className="legend-dot" style={{background:cfg.fill, border:`1.5px solid ${cfg.stroke}`}}>
-                  <span style={{fontSize:9, color:cfg.stroke, fontWeight:800}}>{cfg.icon}</span>
-                </div>
+            {Object.entries(STATUS).map(([k,c])=>(
+              <div key={k} className="legend-item" onClick={()=>setFStatus(fStatus===k?'all':k)}>
+                <div className="legend-dot" style={{background:c.fill,border:`1.5px solid ${c.stroke}`,color:c.stroke}}>{c.icon}</div>
                 <div>
-                  <div className="legend-label">{cfg.label}</div>
-                  <div className="legend-count">{countBy(key)} items</div>
+                  <div className="legend-label">{c.label}</div>
+                  <div className="legend-count">{countBy(k)} items</div>
                 </div>
               </div>
             ))}
@@ -497,208 +528,189 @@ function App() {
         </div>
       </header>
 
-      {/* TOOLBAR */}
-      <div className="toolbar" ref={toolbarRef}>
-        <div className="search-wrap">
-          <span className="search-icon">🔍</span>
+      {/* ── TOOLBAR ── */}
+      <div className="toolbar" ref={tbRef} style={{top:'var(--tb-top,80px)'}}>
+        <div className="srch">
+          <span className="srch-ico">🔍</span>
           <input placeholder="Search items…" value={search} onChange={e=>setSearch(e.target.value)}/>
         </div>
         <div className="tb-sep"/>
-        <button className="tb-btn accent" onClick={() => setModal({type:'item', themeId: themes[0]?.id, item:null})}>＋ Add Item</button>
-        <button className="tb-btn" onClick={() => setModal({type:'theme', theme:null})}>＋ Add Theme</button>
+        <button className="tb-btn accent" onClick={()=>setModal({type:'item',tid:themes[0]?.id,item:null})}>＋ Add Item</button>
+        <button className="tb-btn" onClick={()=>setModal({type:'theme',theme:null})}>＋ Add Theme</button>
         <div className="tb-sep"/>
-        <button className="tb-btn success" onClick={exportJSON}>⬇ Export JSON</button>
-        <button className="tb-btn" onClick={importJSON}>⬆ Import JSON</button>
-        <button className="tb-btn" onClick={printPage}>🖨 Print</button>
-        <button className="tb-btn" onClick={() => setDarkMode(d => !d)}>{darkMode ? '☀️ Light' : '🌙 Dark'}</button>
+        <button className="tb-btn ok" onClick={expJSON}>⬇ Export JSON</button>
+        <button className="tb-btn" onClick={impJSON}>⬆ Import JSON</button>
+        <button className="tb-btn" onClick={()=>window.print()}>🖨 Print</button>
+        <button className="tb-btn" onClick={()=>setDark(d=>!d)}>{dark?'☀️ Light':'🌙 Dark'}</button>
       </div>
 
-      {/* FILTER BAR */}
-      <div className="filter-tags" ref={filterRef}>
-        <span style={{fontSize:10,fontWeight:700,color:'var(--slate400)',textTransform:'uppercase',letterSpacing:'.06em',marginRight:4}}>Filter:</span>
-        {[['all','All Items'],['completed','Completed'],['in-review','In Review'],['in-progress','In Progress'],['to-be-defined','To Be Defined']].map(([val,lbl]) => (
-          <button key={val} className={`filter-tag${filterStatus===val?' active':''}`} onClick={() => setFilterStatus(val)}>{lbl}</button>
+      {/* ── FILTER BAR ── */}
+      <div className="filter-bar" ref={fbRef} style={{top:'var(--fb-top,124px)'}}>
+        <span className="filter-lbl">Filter:</span>
+        {[['all','All Items'],['completed','Completed'],['in-review','In Review'],['in-progress','In Progress'],['to-be-defined','To Be Defined']].map(([v,l])=>(
+          <button key={v} className={`ftag${fStatus===v?' on':''}`} onClick={()=>setFStatus(v)}>{l}</button>
         ))}
       </div>
 
-      {/* ════════════════════════════════════════════════════════
-          TIMELINE GRID
-          ════════════════════════════════════════════════════════
-          Architecture: two sibling overflow-x:auto containers.
-
-          [A] .grid-head-scroll  (overflow:hidden — no user scroll)
-                └─ .grid-head-sticky  (position:sticky on the PAGE)
-                     └─ .col-header  (Q/month labels)
-
-          [B] .grid-rows-scroll  (overflow-x:auto — user scrolls here)
-                └─ theme rows + footer
-
-          When [B] scrolls horizontally, a JS listener mirrors
-          scrollLeft into [A], keeping the header aligned.
-          Both containers have the same min-width so they always
-          match in width.
-      */}
-      <div className="grid-outer">
-
-        {/* [A] Header — sticky on the page, overflow:hidden synced by JS */}
-        <div className="grid-head-scroll" ref={headScrollRef} style={{top: stickyTop}}>
-            <div className="col-header">
-              <div className="col-label-cell" style={{width:LABEL_W}}>
-                <span className="col-label-text">Strategic Theme</span>
-              </div>
-              <div className="month-grid" style={{flex:1}}>
-                <div className="quarter-row">
-                  {QUARTERS.map((q,qi) => (
-                    <div key={q} className="quarter-cell" style={{
-                      color: qi%2===0 ? '#6366f1' : '#64748b',
-                      background: qi%2===0 ? 'rgba(99,102,241,.05)' : 'transparent'
-                    }}>{q}</div>
-                  ))}
+      {/* ══════════════════════════════════════════════════════════
+          ROADMAP TABLE
+          Using a real HTML <table> inside overflow:auto.
+          This is the ONLY CSS pattern where position:sticky on
+          thead/th cells works correctly inside a scroll container.
+          thead tr th { position:sticky; top:0 } is natively
+          supported by all browsers in this context.
+      ══════════════════════════════════════════════════════════ */}
+      <div className="grid-wrap">
+        <table className="roadmap-table">
+          <thead>
+            {/* Row 1: Quarter labels */}
+            <tr>
+              <th className="th-label-q">
+                <div style={{padding:'5px 12px 0',fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',color:'var(--slate300)'}}>
+                  Strategic Theme
                 </div>
-                <div className="month-row">
-                  {MONTHS.map(m => <div key={m} className="month-cell">{m}</div>)}
-                </div>
-              </div>
-            </div>
-        </div>
-
-        {/* [B] Rows — user scrolls this horizontally */}
-        <div className="grid-rows-scroll" ref={rowsScrollRef}>
-
-          {/* Theme rows */}
-          {filteredThemes.map(theme => {
-            const laned = packLanes(theme.items);
-            const maxLane = laned.reduce((m,p) => Math.max(m,p.lane), 0);
-            const rowH = LANE_PAD + (maxLane+1)*LANE_TOTAL + LANE_PAD + 28;
-            const color = getThemeColor(theme.name);
-            const emoji = getThemeEmoji(theme.name);
-
-            return (
-              <div key={theme.id} className="theme-row">
-                <div className="theme-label-cell" style={{width:LABEL_W, minHeight:rowH}}>
-                  <div className="theme-label-inner">
-                    <div className="theme-icon-box" style={{background:color+'1a'}}>
-                      <span style={{fontSize:14}}>{emoji}</span>
-                    </div>
-                    <span className="theme-name" onClick={() => setModal({type:'theme', theme})}>{theme.name}</span>
-                    <button className="theme-edit-btn" onClick={() => setModal({type:'theme', theme})} title="Edit theme">✏️</button>
-                  </div>
-                </div>
-
-                <div className="bars-area" style={{height:rowH}}>
-                  {/* Quarter tints */}
-                  {[0,2].map(qi => (
-                    <div key={qi} style={{position:'absolute',top:0,bottom:0,left:pct(qi*3),width:'25%',background:'rgba(99,102,241,.025)',pointerEvents:'none'}}/>
-                  ))}
-                  {/* Month lines */}
-                  {MONTHS.map((_,i) => (
-                    <div key={i} style={{position:'absolute',top:0,bottom:0,left:pct(i+1),width:1,background:'#e2e8f0',pointerEvents:'none'}}/>
-                  ))}
-                  {/* Quarter dividers */}
-                  {[1,2,3].map(q => (
-                    <div key={q} style={{position:'absolute',top:0,bottom:0,left:pct(q*3),width:1,background:'#cbd5e1',pointerEvents:'none'}}/>
-                  ))}
-
-                  {laned.map((p) => {
-                    const cfg = STATUSES[p.status] || STATUSES.completed;
-                    const top = LANE_PAD + p.lane * LANE_TOTAL;
-                    return (
-                      <React.Fragment key={p.id}>
-                        {/* Ongoing dashed extension */}
-                        {p.ongoingEnd !== undefined && (
-                          <div
-                            className="bar bar-dashed"
-                            style={{
-                              left: pct(p.end+1), width:`calc(${pct(p.ongoingEnd-p.end)} - 4px)`,
-                              top: top+(BAR_H-26)/2, height:26,
-                              background:'#f0fdf4', border:'1.5px dashed #059669',
-                              borderRadius:'0 6px 6px 0',
-                            }}
-                            onMouseEnter={e => { setHovered({...p, name:`${p.name} — Enhancements`, desc:p.ongoingLabel, sub:`${MONTHS[p.end+1]} – ${MONTHS[p.ongoingEnd]} · Enhancements & grooming`}); setPos({x:e.clientX,y:e.clientY}); }}
-                            onMouseLeave={() => setHovered(null)}
-                            onMouseMove={e => setPos({x:e.clientX,y:e.clientY})}
-                          >
-                            <span style={{fontSize:9,fontWeight:700,fontStyle:'italic',color:'#059669',paddingLeft:6,overflow:'hidden',whiteSpace:'nowrap'}}>Enhancements & grooming</span>
-                          </div>
-                        )}
-                        {/* Main bar */}
-                        <div
-                          className="bar"
-                          style={{
-                            left: barL(p.start), width: barW(p.start, p.end),
-                            top, height: BAR_H,
-                            background: cfg.fill,
-                            border: `1.5px solid ${cfg.stroke}`,
-                            borderRadius: p.ongoingEnd !== undefined ? '6px 0 0 6px' : '6px',
-                          }}
-                          onMouseEnter={e => { setHovered(p); setPos({x:e.clientX,y:e.clientY}); }}
-                          onMouseLeave={() => setHovered(null)}
-                          onMouseMove={e => setPos({x:e.clientX,y:e.clientY})}
-                          onClick={() => setModal({type:'item', themeId: theme.id, item: p})}
-                        >
-                          <div className="bar-title" style={{color:cfg.text}}>{p.name}</div>
-                          <div className="bar-date" style={{color:cfg.stroke}}>{dur(p.start,p.end)}</div>
-                          <div className="bar-actions">
-                            <button className="bar-action" title="Edit" onClick={e=>{e.stopPropagation();setModal({type:'item',themeId:theme.id,item:p})}}>✏️</button>
-                            <button className="bar-action" title="Delete" onClick={e=>{e.stopPropagation();if(confirm('Delete this item?'))deleteItem(theme.id,p.id)}}>✕</button>
-                          </div>
-                        </div>
-                      </React.Fragment>
-                    );
-                  })}
-
-                  {/* Add button */}
-                  <button
-                    className="add-item-btn"
-                    style={{bottom:6}}
-                    onClick={() => setModal({type:'item', themeId: theme.id, item: null})}
-                  >＋ Add item to {theme.name}</button>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Footer strip */}
-          <div className="footer-qstrip" style={{minWidth:'max-content'}}>
-            <div className="footer-label-pad" style={{width:LABEL_W}}>
-              <span style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',color:'#94a3b8'}}>2026</span>
-            </div>
-            <div className="footer-q-cells">
-              {QUARTERS.map((q,qi) => (
-                <div key={q} className="footer-q-cell" style={{color:qi%2===0?'#818cf8':'#94a3b8'}}>
-                  {q} · {Q_RANGES[qi]}
-                </div>
+              </th>
+              {QUARTERS.map((q,qi)=>(
+                <th key={q} className="th-q" colSpan={3}>
+                  <div className="th-q-inner" style={{
+                    color:qi%2===0?'#6366f1':'#64748b',
+                    background:qi%2===0?'rgba(99,102,241,.06)':'transparent'
+                  }}>{q}</div>
+                </th>
               ))}
-            </div>
+            </tr>
+            {/* Row 2: Month labels */}
+            <tr>
+              <th className="th-label-m">2026</th>
+              {MONTHS.map(m=>(
+                <th key={m} className="th-month">{m}</th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {filtered.map(theme=>{
+              const laned=packLanes(theme.items);
+              const maxLane=laned.reduce((m,p)=>Math.max(m,p.lane),0);
+              const rowH=PAD+(maxLane+1)*LANE+PAD+26;
+              const color=tColor(theme.name);
+              const emoji=tEmoji(theme.name);
+
+              return(
+                <tr key={theme.id}>
+                  {/* Frozen label cell */}
+                  <td className="td-label" style={{height:rowH}}>
+                    <div className="td-label-inner">
+                      <div className="th-icon" style={{background:color+'1a'}}>{emoji}</div>
+                      <span className="th-name" onClick={()=>setModal({type:'theme',theme})}>{theme.name}</span>
+                      <button className="td-label-edit" onClick={()=>setModal({type:'theme',theme})} title="Edit">✏️</button>
+                    </div>
+                  </td>
+
+                  {/* Bars cell — spans all 12 month columns */}
+                  <td className="td-bars" colSpan={12} style={{height:rowH}}>
+                    {/* Quarter tints */}
+                    {[0,2].map(qi=>(
+                      <div key={qi} className="q-tint" style={{left:pct(qi*3),width:'25%',background:'rgba(99,102,241,.03)'}}/>
+                    ))}
+                    {/* Month grid lines */}
+                    {MONTHS.map((_,i)=>(
+                      <div key={i} className="v-line" style={{left:pct(i+1),background:'#e2e8f0'}}/>
+                    ))}
+                    {/* Quarter dividers */}
+                    {[1,2,3].map(q=>(
+                      <div key={q} className="v-line" style={{left:pct(q*3),background:'#cbd5e1'}}/>
+                    ))}
+
+                    {laned.map(p=>{
+                      const cfg=STATUS[p.status]||STATUS.completed;
+                      const top=PAD+p.lane*LANE;
+                      return(
+                        <React.Fragment key={p.id}>
+                          {/* Enhancement extension bar */}
+                          {p.ongoingEnd!==undefined&&(
+                            <div
+                              className="bar-enh"
+                              style={{left:pct(p.end+1),width:`calc(${pct(p.ongoingEnd-p.end)} - 4px)`,top:top+(BAR_H-24)/2,height:24}}
+                              onMouseEnter={e=>{setTip({...p,name:`${p.name} — Enhancements`,desc:p.ongoingLabel,sub:`${MONTHS[p.end+1]} – ${MONTHS[p.ongoingEnd]} · Enhancements`});setTipPos({x:e.clientX,y:e.clientY})}}
+                              onMouseLeave={()=>setTip(null)}
+                              onMouseMove={e=>setTipPos({x:e.clientX,y:e.clientY})}
+                            >
+                              <span className="bar-enh-lbl">Enhancements & grooming</span>
+                            </div>
+                          )}
+                          {/* Main bar */}
+                          <div
+                            className="bar"
+                            style={{
+                              left:barL(p.start),width:barW(p.start,p.end),
+                              top,height:BAR_H,
+                              background:cfg.fill,
+                              border:`1.5px solid ${cfg.stroke}`,
+                              borderRadius:p.ongoingEnd!==undefined?'6px 0 0 6px':'6px',
+                            }}
+                            onMouseEnter={e=>{setTip(p);setTipPos({x:e.clientX,y:e.clientY})}}
+                            onMouseLeave={()=>setTip(null)}
+                            onMouseMove={e=>setTipPos({x:e.clientX,y:e.clientY})}
+                            onClick={()=>setModal({type:'item',tid:theme.id,item:p})}
+                          >
+                            <div className="bar-title" style={{color:cfg.text}}>{p.name}</div>
+                            <div className="bar-date" style={{color:cfg.stroke}}>{label(p.start,p.end)}</div>
+                            <div className="bar-acts">
+                              <button className="bact" onClick={e=>{e.stopPropagation();setModal({type:'item',tid:theme.id,item:p})}}>✏️</button>
+                              <button className="bact" onClick={e=>{e.stopPropagation();if(confirm('Delete?'))delItem(theme.id,p.id)}}>✕</button>
+                            </div>
+                          </div>
+                        </React.Fragment>
+                      );
+                    })}
+
+                    {/* Add button */}
+                    <button
+                      className="add-row-btn"
+                      style={{bottom:4}}
+                      onClick={()=>setModal({type:'item',tid:theme.id,item:null})}
+                    >＋ Add item to {theme.name}</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {/* Footer quarter strip */}
+        <div className="footer-strip">
+          <div className="footer-lbl">2026</div>
+          <div className="footer-qs">
+            {QUARTERS.map((q,qi)=>(
+              <div key={q} className="footer-q" style={{color:qi%2===0?'#818cf8':'#94a3b8'}}>
+                {q} · {Q_RANGE[qi]}
+              </div>
+            ))}
           </div>
+        </div>
+      </div>
 
-        </div>{/* end .grid-rows-scroll */}
-      </div>{/* end .grid-outer */}
-
-      {/* BOTTOM PANELS */}
-      <div className="bottom-panels">
-        {/* Timeline Insights */}
+      {/* ── BOTTOM PANELS ── */}
+      <div className="panels">
         <div className="panel">
           <div className="panel-hdr">
-            <div className="panel-icon-box" style={{background:'#f5f3ff'}}>📅</div>
+            <div className="panel-ico" style={{background:'#f5f3ff'}}>📅</div>
             <span className="panel-title">Timeline Insights</span>
           </div>
           {[
-            { label:"Q1 — Foundation Sprint", detail:"9 initiatives delivered: A6 Card, Add Bag, CS Dashboard, Express Delivery, Change Time Slots, Florist Tickets, Stock Categories, Daily Cycle Count, Website Flow Audit." },
-            { label:"Q2 — Depth & Intelligence", detail:"8 initiatives delivered: Production System 2.0, Sherlock Slice 1, Design System for Ops, Dynamic Address Validation, Ticketing Phase 1 & 2, Priority Engine, Delivery App Workflow." },
-            { label:"Q3 — Starting Now", detail:"8 initiatives in interviews & design phase: Sherlock Slice 2, OMS Ticket Linking, Customer Segmentation Tool, Product Tier Tagging, Guideline Videos, Dynamic Inventory, Priority Engine PRD, AI QC Scoring Model." },
-            { label:"Q4 — Defined & TBD", detail:"3 CS initiatives defined (Order 360, SLA Tracking, Manager Reports). Additional Q4 scope to be finalised after Q3 grooming sessions." },
-          ].map((item,i) => (
-            <div key={i} className="insight-item">
-              <div className="insight-dot"/>
-              <div>
-                <div className="insight-label">{item.label}</div>
-                <div className="insight-detail">{item.detail}</div>
-              </div>
+            {h:"Q1 — Foundation Sprint",b:"9 initiatives delivered: A6 Card, Add Bag, CS Dashboard, Express Delivery, Change Time Slots, Florist Tickets, Stock Categories, Daily Cycle Count, Website Flow Audit."},
+            {h:"Q2 — Depth & Intelligence",b:"8 initiatives delivered: Production System 2.0, Sherlock Slice 1, Design System for Ops, Dynamic Address Validation, Ticketing Phase 1 & 2, Priority Engine, Delivery App Workflow."},
+            {h:"Q3 — Starting Now",b:"8 initiatives in design phase: Sherlock Slice 2, OMS Ticket Linking, Customer Segmentation, Product Tier Tagging, Guideline Videos, Dynamic Inventory, Priority Engine PRD, AI QC Scoring."},
+            {h:"Q4 — Defined & TBD",b:"3 CS initiatives defined (Order 360, SLA Tracking, Manager Reports). Additional Q4 scope to be finalised after Q3 grooming."},
+          ].map((x,i)=>(
+            <div key={i} className="ins-item">
+              <div className="ins-dot"/>
+              <div><div className="ins-head">{x.h}</div><div className="ins-body">{x.b}</div></div>
             </div>
           ))}
-          <div style={{marginTop:16,paddingTop:14,borderTop:'1px solid #f1f5f9'}}>
-            <div style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#94a3b8',marginBottom:8}}>Initiative split</div>
+          <div style={{marginTop:14,paddingTop:12,borderTop:'1px solid #f1f5f9'}}>
+            <div style={{fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#94a3b8',marginBottom:7}}>Initiative split</div>
             <div className="split-bar">
               <div style={{width:'61%',background:'#d1fae5',color:'#065f46'}}>Q1–Q2 · 17 shipped</div>
               <div style={{width:'39%',background:'#ede9fe',color:'#5b21b6'}}>Q3–Q4 · 11 planned</div>
@@ -706,267 +718,209 @@ function App() {
           </div>
         </div>
 
-        {/* About */}
         <div className="panel">
           <div className="panel-hdr">
-            <div className="panel-icon-box" style={{background:'#eff6ff'}}>ℹ️</div>
+            <div className="panel-ico" style={{background:'#eff6ff'}}>ℹ️</div>
             <span className="panel-title">About This Roadmap</span>
           </div>
-          <p style={{fontSize:12,color:'#64748b',lineHeight:1.7,marginBottom:10}}>
-            This roadmap covers the UX design work across <strong style={{color:'#334155'}}>6 strategic themes</strong> and <strong style={{color:'#334155'}}>{allItems.length} total initiatives</strong> throughout 2026.
+          <p style={{fontSize:12,color:'#64748b',lineHeight:1.7,marginBottom:9}}>
+            This roadmap covers UX design work across <strong style={{color:'#334155'}}>6 strategic themes</strong> and <strong style={{color:'#334155'}}>{allItems.length} total initiatives</strong> throughout 2026.
           </p>
-          <p style={{fontSize:12,color:'#64748b',lineHeight:1.7,marginBottom:10}}>
+          <p style={{fontSize:12,color:'#64748b',lineHeight:1.7,marginBottom:9}}>
             <strong style={{color:'#334155'}}>Q1 & Q2 are complete</strong> — all 17 initiatives designed and handed off to dev. <strong style={{color:'#334155'}}>Q3 begins now</strong> with 8 initiatives entering interviews and design phase.
           </p>
           <p style={{fontSize:12,color:'#64748b',lineHeight:1.7}}>
-            <strong style={{color:'#334155'}}>Q4 has 3 CS initiatives defined</strong> (Order 360, SLA tracking, Manager Reports) with additional scope to be determined after Q3 grooming.
+            <strong style={{color:'#334155'}}>Q4 has 3 CS initiatives defined</strong> with additional scope to be determined after Q3 grooming.
           </p>
-          <div style={{marginTop:16,paddingTop:12,borderTop:'1px solid #f1f5f9',display:'flex',alignItems:'center',gap:8}}>
+          <div style={{marginTop:14,paddingTop:11,borderTop:'1px solid #f1f5f9',display:'flex',alignItems:'center',gap:7}}>
             <div style={{width:6,height:6,borderRadius:'50%',background:'#10b981'}}/>
-            <span style={{fontSize:10,color:'#94a3b8'}}>Updated June 2026 · Floward UX Design Team</span>
+            <span style={{fontSize:10,color:'#94a3b8'}}>Updated June 2026 · Floward UX Design</span>
           </div>
         </div>
 
-        {/* Impact */}
         <div className="panel">
           <div className="panel-hdr">
-            <div className="panel-icon-box" style={{background:'#ecfdf5'}}>🎯</div>
+            <div className="panel-ico" style={{background:'#ecfdf5'}}>🎯</div>
             <span className="panel-title">Impact & Contribution</span>
           </div>
           <div className="kpi-grid">
             {[
-              {icon:'🎨', val:'6',    lbl:'Strategic themes'},
-              {icon:'📅', val:allItems.length, lbl:'Total initiatives'},
-              {icon:'✅', val:countBy('completed'), lbl:'Completed (Q1–Q2)'},
-              {icon:'🌍', val:'4+',   lbl:'Markets impacted'},
-              {icon:'👥', val:'~200', lbl:'Agents & ops users'},
-              {icon:'⚡', val:'3',    lbl:'AI features shipping'},
-            ].map(({icon,val,lbl}) => (
-              <div key={lbl} className="kpi-card">
-                <div className="kpi-icon-box">{icon}</div>
-                <div>
-                  <div className="kpi-val">{val}</div>
-                  <div className="kpi-lbl">{lbl}</div>
-                </div>
+              {i:'🎨',v:'6',l:'Strategic themes'},
+              {i:'📅',v:allItems.length,l:'Total initiatives'},
+              {i:'✅',v:countBy('completed'),l:'Completed (Q1–Q2)'},
+              {i:'🌍',v:'4+',l:'Markets impacted'},
+              {i:'👥',v:'~200',l:'Agents & ops users'},
+              {i:'⚡',v:'3',l:'AI features shipping'},
+            ].map(({i,v,l})=>(
+              <div key={l} className="kpi-card">
+                <div className="kpi-ico">{i}</div>
+                <div><div className="kpi-val">{v}</div><div className="kpi-lbl">{l}</div></div>
               </div>
             ))}
           </div>
-          <div style={{paddingTop:12,borderTop:'1px solid #f1f5f9'}}>
-            <div style={{fontSize:10,fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#94a3b8',marginBottom:8}}>Key product systems</div>
+          <div style={{paddingTop:10,borderTop:'1px solid #f1f5f9'}}>
+            <div style={{fontSize:9,fontWeight:700,textTransform:'uppercase',letterSpacing:'.08em',color:'#94a3b8',marginBottom:7}}>Key product systems</div>
             <div>
-              {["Sherlock OMS Agent","Priority Engine","CS Ticketing","CS Dashboard","Daily Cycle Count","Design System for Ops","AI QC Scoring"].map(tag => (
-                <span key={tag} className="tag">{tag}</span>
+              {["Sherlock OMS Agent","Priority Engine","CS Ticketing","CS Dashboard","Daily Cycle Count","Design System for Ops","AI QC Scoring"].map(t=>(
+                <span key={t} className="tag">{t}</span>
               ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* FIXED LEGEND */}
-      <div className="legend-box">
-        <div className="legend-box-title">Status Legend</div>
-        {Object.entries(STATUSES).map(([key,cfg]) => (
-          <div key={key} className="legend-box-item">
-            <div className="legend-swatch" style={{background:cfg.fill, border:`1.5px solid ${cfg.stroke}`}}>
-              <span style={{color:cfg.stroke, fontWeight:900}}>{cfg.icon}</span>
-            </div>
-            <span style={{fontSize:11,color:'#475569'}}>{cfg.label}</span>
+      {/* ── FIXED LEGEND ── */}
+      <div className="leg-box">
+        <div className="leg-box-title">Status Legend</div>
+        {Object.entries(STATUS).map(([k,c])=>(
+          <div key={k} className="leg-row">
+            <div className="leg-sw" style={{background:c.fill,border:`1.5px solid ${c.stroke}`,color:c.stroke}}>{c.icon}</div>
+            <span style={{fontSize:11,color:'#475569'}}>{c.label}</span>
           </div>
         ))}
-        <div className="legend-box-item" style={{paddingTop:6,marginTop:4,borderTop:'1px solid #f1f5f9'}}>
-          <div className="legend-swatch" style={{background:'#f0fdf4',backgroundImage:'repeating-linear-gradient(-45deg,transparent,transparent 3px,rgba(5,150,105,.15) 3px,rgba(5,150,105,.15) 6px)',border:'1.5px dashed #059669'}}/>
-          <span style={{fontSize:10,color:'#64748b',lineHeight:1.35}}>Design done<br/>Ongoing enhancements</span>
+        <div className="leg-row" style={{paddingTop:5,marginTop:4,borderTop:'1px solid #f1f5f9'}}>
+          <div className="leg-sw" style={{background:'#f0fdf4',backgroundImage:'repeating-linear-gradient(-45deg,transparent,transparent 3px,rgba(5,150,105,.15) 3px,rgba(5,150,105,.15) 6px)',border:'1.5px dashed #059669'}}/>
+          <span style={{fontSize:10,color:'#64748b',lineHeight:1.3}}>Design done<br/>Ongoing enhancements</span>
         </div>
       </div>
 
-      {/* TOOLTIP */}
-      {hovered && (
-        <div className="tooltip" style={{
-          left: Math.min(pos.x+16, (window.innerWidth||1400)-316),
-          top:  Math.max(pos.y-10, 8)
+      {/* ── TOOLTIP ── */}
+      {tip&&(
+        <div className="tip" style={{
+          left:Math.min(tipPos.x+14,window.innerWidth-304),
+          top:Math.max(tipPos.y-8,8)
         }}>
-          <div className="tooltip-title">{hovered.name}</div>
-          <span className="tooltip-badge" style={{background:STATUSES[hovered.status]?.fill, color:STATUSES[hovered.status]?.text, border:`1px solid ${STATUSES[hovered.status]?.stroke}`}}>
-            {STATUSES[hovered.status]?.label}
+          <div className="tip-title">{tip.name}</div>
+          <span className="tip-badge" style={{background:STATUS[tip.status]?.fill,color:STATUS[tip.status]?.text,border:`1px solid ${STATUS[tip.status]?.stroke}`}}>
+            {STATUS[tip.status]?.label}
           </span>
-          {hovered.sub && <div className="tooltip-sub">{hovered.sub}</div>}
-          {hovered.desc && <div className="tooltip-desc">{hovered.desc}</div>}
+          {tip.sub&&<div className="tip-sub">{tip.sub}</div>}
+          {tip.desc&&<div className="tip-desc">{tip.desc}</div>}
         </div>
       )}
 
-      {/* MODALS */}
-      {modal?.type === 'item' && (
-        <ItemModal
-          themes={themes}
-          themeId={modal.themeId}
-          item={modal.item}
-          onSave={(themeId, item, origThemeId) => {
-            if (origThemeId && origThemeId !== themeId) moveItem(origThemeId, themeId, item);
-            else saveItem(themeId, item);
-          }}
-          onDelete={(themeId, itemId) => deleteItem(themeId, itemId)}
-          onClose={() => setModal(null)}
-        />
+      {/* ── MODALS ── */}
+      {modal?.type==='item'&&(
+        <ItemModal themes={themes} tid={modal.tid} item={modal.item}
+          onSave={saveItem} onDelete={delItem} onClose={()=>setModal(null)}/>
       )}
-      {modal?.type === 'theme' && (
-        <ThemeModal
-          theme={modal.theme}
-          onSave={saveTheme}
-          onDelete={deleteTheme}
-          onClose={() => setModal(null)}
-        />
+      {modal?.type==='theme'&&(
+        <ThemeModal theme={modal.theme}
+          onSave={saveTheme} onDelete={delTheme} onClose={()=>setModal(null)}/>
       )}
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────── */
-/*  ITEM MODAL                                                      */
-/* ─────────────────────────────────────────────────────────────── */
-function ItemModal({ themes, themeId, item, onSave, onDelete, onClose }) {
-  const isNew = !item;
-  const [form, setForm] = useState({
-    id:     item?.id || genId(),
-    name:   item?.name || '',
-    start:  item?.start ?? 0,
-    end:    item?.end ?? 0,
-    ongoingEnd: item?.ongoingEnd ?? '',
-    ongoingLabel: item?.ongoingLabel || '',
-    status: item?.status || 'completed',
-    sub:    item?.sub || '',
-    desc:   item?.desc || '',
-    themeId: themeId,
+/* ── ITEM MODAL ────────────────────────────────────────────────── */
+function ItemModal({themes,tid,item,onSave,onDelete,onClose}){
+  const isNew=!item;
+  const [f,setF]=useState({
+    id:item?.id||gid(),
+    name:item?.name||'',
+    start:item?.start??0,
+    end:item?.end??0,
+    ongoingEnd:item?.ongoingEnd??'',
+    ongoingLabel:item?.ongoingLabel||'',
+    status:item?.status||'completed',
+    sub:item?.sub||'',
+    desc:item?.desc||'',
+    tid,
   });
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
 
-  const set = (k,v) => setForm(f => ({...f, [k]:v}));
-
-  const handleSave = () => {
-    if (!form.name.trim()) { alert('Please enter an item name.'); return; }
-    const clean = {
-      id: form.id,
-      name: form.name.trim(),
-      start: +form.start,
-      end: +form.end,
-      status: form.status,
-      sub: form.sub.trim(),
-      desc: form.desc.trim(),
-    };
-    if (form.ongoingEnd !== '') clean.ongoingEnd = +form.ongoingEnd;
-    if (form.ongoingLabel) clean.ongoingLabel = form.ongoingLabel.trim();
-    onSave(form.themeId, clean, item ? themeId : null);
+  const handleSave=()=>{
+    if(!f.name.trim()){alert('Please enter a name.');return;}
+    const clean={id:f.id,name:f.name.trim(),start:+f.start,end:+f.end,status:f.status,sub:f.sub.trim(),desc:f.desc.trim()};
+    if(f.ongoingEnd!==''){clean.ongoingEnd=+f.ongoingEnd;clean.ongoingLabel=f.ongoingLabel.trim();}
+    onSave(f.tid,clean,item?tid:null);
   };
 
-  return (
-    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+  return(
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div className="modal">
         <div className="modal-hdr">
-          <h3>{isNew ? '＋ Add Roadmap Item' : '✏️ Edit Roadmap Item'}</h3>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <h3>{isNew?'＋ Add Roadmap Item':'✏️ Edit Roadmap Item'}</h3>
+          <button className="modal-x" onClick={onClose}>✕</button>
         </div>
         <div className="modal-body">
-          <div className="form-group">
-            <label>Item Name *</label>
-            <input value={form.name} onChange={e => set('name',e.target.value)} placeholder="e.g. New Feature Design"/>
-          </div>
-          <div className="form-group">
-            <label>Theme</label>
-            <select value={form.themeId} onChange={e => set('themeId',e.target.value)}>
-              {themes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+          <div className="fg"><label>Item Name *</label><input value={f.name} onChange={e=>set('name',e.target.value)} placeholder="e.g. New Feature Design"/></div>
+          <div className="fg"><label>Theme</label>
+            <select value={f.tid} onChange={e=>set('tid',e.target.value)}>
+              {themes.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}
             </select>
           </div>
-          <div className="form-group">
-            <label>Status</label>
-            <select value={form.status} onChange={e => set('status',e.target.value)}>
-              {Object.entries(STATUSES).map(([k,v]) => <option key={k} value={k}>{v.label}</option>)}
+          <div className="fg"><label>Status</label>
+            <select value={f.status} onChange={e=>set('status',e.target.value)}>
+              {Object.entries(STATUS).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}
             </select>
           </div>
-          <div className="form-row">
-            <div className="form-group" style={{marginBottom:0}}>
-              <label>Start Month</label>
-              <select value={form.start} onChange={e => set('start',e.target.value)}>
-                {MONTHS.map((m,i) => <option key={i} value={i}>{m}</option>)}
+          <div className="fg-row">
+            <div className="fg" style={{marginBottom:0}}><label>Start Month</label>
+              <select value={f.start} onChange={e=>set('start',e.target.value)}>
+                {MONTHS.map((m,i)=><option key={i} value={i}>{m}</option>)}
               </select>
             </div>
-            <div className="form-group" style={{marginBottom:0}}>
-              <label>End Month</label>
-              <select value={form.end} onChange={e => set('end',e.target.value)}>
-                {MONTHS.map((m,i) => <option key={i} value={i}>{m}</option>)}
+            <div className="fg" style={{marginBottom:0}}><label>End Month</label>
+              <select value={f.end} onChange={e=>set('end',e.target.value)}>
+                {MONTHS.map((m,i)=><option key={i} value={i}>{m}</option>)}
               </select>
             </div>
           </div>
-          <div style={{marginBottom:14,marginTop:14}}>
-            <div className="form-group">
-              <label>Ongoing Extension End (optional)</label>
-              <select value={form.ongoingEnd} onChange={e => set('ongoingEnd',e.target.value)}>
+          <div style={{marginTop:13}}>
+            <div className="fg"><label>Enhancement Extension End (optional)</label>
+              <select value={f.ongoingEnd} onChange={e=>set('ongoingEnd',e.target.value)}>
                 <option value="">— None —</option>
-                {MONTHS.map((m,i) => <option key={i} value={i}>{m}</option>)}
+                {MONTHS.map((m,i)=><option key={i} value={i}>{m}</option>)}
               </select>
             </div>
-            {form.ongoingEnd !== '' && (
-              <div className="form-group">
-                <label>Ongoing Extension Label</label>
-                <textarea value={form.ongoingLabel} onChange={e => set('ongoingLabel',e.target.value)} placeholder="Describe what continues in the dashed extension…"/>
+            {f.ongoingEnd!==''&&(
+              <div className="fg"><label>Extension Description</label>
+                <textarea value={f.ongoingLabel} onChange={e=>set('ongoingLabel',e.target.value)} placeholder="Describe what continues in the dashed extension…"/>
               </div>
             )}
           </div>
-          <div className="form-group">
-            <label>Sub-label / Duration note</label>
-            <input value={form.sub} onChange={e => set('sub',e.target.value)} placeholder="e.g. Mar 2 – Apr 16 · Design Handoff"/>
-          </div>
-          <div className="form-group">
-            <label>Description (shown in tooltip)</label>
-            <textarea value={form.desc} onChange={e => set('desc',e.target.value)} placeholder="Describe what this initiative covers…"/>
-          </div>
+          <div className="fg"><label>Sub-label / Duration</label><input value={f.sub} onChange={e=>set('sub',e.target.value)} placeholder="e.g. Mar 2 – Apr 16 · Design Handoff"/></div>
+          <div className="fg"><label>Description (tooltip)</label><textarea value={f.desc} onChange={e=>set('desc',e.target.value)} placeholder="Describe what this initiative covers…"/></div>
         </div>
-        <div className="modal-footer">
-          {!isNew && <button className="m-btn danger" onClick={() => { if(confirm('Delete this item?')) onDelete(themeId, item.id); }}>Delete</button>}
-          <button className="m-btn cancel" onClick={onClose}>Cancel</button>
-          <button className="m-btn save" onClick={handleSave}>{isNew ? 'Add Item' : 'Save Changes'}</button>
+        <div className="modal-ftr">
+          {!isNew&&<button className="mbtn del" onClick={()=>{if(confirm('Delete this item?'))onDelete(tid,item.id)}}>Delete</button>}
+          <button className="mbtn cancel" onClick={onClose}>Cancel</button>
+          <button className="mbtn save" onClick={handleSave}>{isNew?'Add Item':'Save Changes'}</button>
         </div>
       </div>
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────── */
-/*  THEME MODAL                                                     */
-/* ─────────────────────────────────────────────────────────────── */
-function ThemeModal({ theme, onSave, onDelete, onClose }) {
-  const isNew = !theme;
-  const [name, setName] = useState(theme?.name || '');
-
-  const handleSave = () => {
-    if (!name.trim()) { alert('Please enter a theme name.'); return; }
-    onSave({ id: theme?.id || genId(), name: name.trim(), items: theme?.items || [] });
-  };
-
-  return (
-    <div className="modal-overlay" onClick={e => e.target===e.currentTarget && onClose()}>
+/* ── THEME MODAL ───────────────────────────────────────────────── */
+function ThemeModal({theme,onSave,onDelete,onClose}){
+  const isNew=!theme;
+  const [name,setName]=useState(theme?.name||'');
+  return(
+    <div className="modal-overlay" onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div className="modal" style={{width:380}}>
         <div className="modal-hdr">
-          <h3>{isNew ? '＋ Add Theme' : '✏️ Edit Theme'}</h3>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <h3>{isNew?'＋ Add Theme':'✏️ Edit Theme'}</h3>
+          <button className="modal-x" onClick={onClose}>✕</button>
         </div>
         <div className="modal-body">
-          <div className="form-group">
-            <label>Theme Name *</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Mobile Experience"/>
-          </div>
-          <p style={{fontSize:11,color:'#94a3b8',lineHeight:1.5}}>
-            Icons and colors are automatically assigned based on the theme name. You can customize them further by editing the source data.
-          </p>
+          <div className="fg"><label>Theme Name *</label><input value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Mobile Experience"/></div>
+          <p style={{fontSize:11,color:'#94a3b8',lineHeight:1.5}}>Icons and colors are assigned automatically based on the theme name.</p>
         </div>
-        <div className="modal-footer">
-          {!isNew && <button className="m-btn danger" onClick={() => onDelete(theme.id)}>Delete Theme</button>}
-          <button className="m-btn cancel" onClick={onClose}>Cancel</button>
-          <button className="m-btn save" onClick={handleSave}>{isNew ? 'Add Theme' : 'Save Changes'}</button>
+        <div className="modal-ftr">
+          {!isNew&&<button className="mbtn del" onClick={()=>onDelete(theme.id)}>Delete Theme</button>}
+          <button className="mbtn cancel" onClick={onClose}>Cancel</button>
+          <button className="mbtn save" onClick={()=>{if(!name.trim()){alert('Enter a name.');return;}onSave({id:theme?.id||gid(),name:name.trim()})}}>
+            {isNew?'Add Theme':'Save Changes'}
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-ReactDOM.render(<App/>, document.getElementById('app'));
+ReactDOM.render(<App/>,document.getElementById('root'));
 </script>
 </body>
 </html>
